@@ -19,10 +19,11 @@ export const DietForm = ({ formData, onChange }) => {
             value={averageDiet}
             onChange={value => onChange(value, 'averageDiet')}
           >
-            <Option value="1">Omnívora</Option>
-            <Option value="2">Pescetariana</Option>
-            <Option value="3">Vegetariana</Option>
-            <Option value="4">Vegana</Option>
+            <Option value="Carnívoro">Carnivore</Option>
+            <Option value="Omnívoro">Omnivore</Option>
+            <Option value="Pescetariana">Pescatarian</Option>
+            <Option value="Vegetariana">Vegetarian</Option>
+            <Option value="Vegana">Vegan</Option>
           </Select>
         </SelectLayout>
       </Col>

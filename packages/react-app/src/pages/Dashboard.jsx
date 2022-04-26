@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import React, { useContext, useEffect, useState } from 'react'
+import ReactGA from 'react-ga4'
 import { useHistory } from 'react-router-dom'
 import { Col, Image, Row, Typography } from 'antd'
 
@@ -18,6 +19,9 @@ const { utils } = require('ethers')
 const { Text } = Typography
 
 const Dashboard = () => {
+  ReactGA.initialize('G-L9J2W0LSQS')
+  ReactGA.send('pageview')
+
   const router = useHistory()
   const { address, isLoadingAccount } = useContext(NetworkContext)
   const { USDPrices, walletBalance, tonsPledged, isPledged, yourKTBalance, yourTreejerBalance, yourETBalance, CO2TokenBalance } = useContext(WalletContext)
@@ -67,16 +71,7 @@ const Dashboard = () => {
         : 0,
     )
     setPledged(isPledged)
-  }, [
-    CO2TokenBalance,
-    USDPrices,
-    isPledged,
-    polygonBCTBalance,
-    polygonMCO2Balance,
-    polygonNCTBalance,
-    tonsPledged,
-    yourKTBalance,
-  ])
+  }, [CO2TokenBalance, USDPrices, address, isPledged, polygonBCTBalance, polygonKlimaBalance, polygonMCO2Balance, polygonNCTBalance, polygonSKlimaBalance, tonsPledged, trees, yourKTBalance])
 
   return (
     <Row justify="center" className="my-sm">

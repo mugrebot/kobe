@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
+import ReactGA from 'react-ga4'
 import { Button, Col, Row, Space, Typography } from 'antd'
 import { useGasPrice } from 'eth-hooks'
 import Set from 'set.js'
@@ -27,18 +28,21 @@ const SetJsPolygonAddresses = {
   setValuerAddress: '0x3700414Bb6716FcD8B14344fb10DDd91FdEA59eC',
 }
 
+
 const ReFi = () => {
-  const { USDPrices, walletBalance, isPledged, isLoadingBalances } = useContext(WalletContext)
+  ReactGA.initialize('G-L9J2W0LSQS')
+  ReactGA.send('pageview')
+
+  const { contracts, USDPrices, walletBalance, isPledged, isLoadingBalances, writeContracts } = useContext(WalletContext)
   const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance } = walletBalance
-  const { address, isLoadingAccount, injectedProvider, targetNetwork, userSigner, writeContracts } = useContext(NetworkContext)
+  const { address, isLoadingAccount, injectedProvider, targetNetwork, userSigner } = useContext(NetworkContext)
 
   const [balance,setBalance] = useState(0)
   const [set,setSet] = useState()
   const [setName,setSetName] = useState('')
   const [modalUp, setModalUp] = useState(false)
-  const [approving, setApproving] = useState()
 
-  const gasPrice = useGasPrice(targetNetwork, 'fast')
+  const gasPrice = useGasPrice(targetNetwork, 'fastest')
   const tx = Transactor(userSigner, gasPrice)
 
   const handleModalUp = set => {
@@ -51,18 +55,6 @@ const ReFi = () => {
     setSetName('')
   }
 
-  const handleApproveTokens = async () => {
-    // setApproving(true)
-    // await tx(writeContracts.PBCT.approve(contracts.KoyweCollectibles.address, mintPrice))
-    // setApproving(false)
-  }
-
-  const handleIssuance = async () => {
-    // setBuying(true)
-    // await tx(writeContracts.KoyweCollectibles.mintItem())
-    // setBuying(false)
-  }
-
   useEffect(() => {
     const getSet = async () => {
       if(injectedProvider) {
@@ -72,6 +64,7 @@ const ReFi = () => {
         }
 
         setSet(new Set(SetJsConfig))
+
       }
     }
 
@@ -96,8 +89,8 @@ const ReFi = () => {
 
   return (
     <Row justify="center" lassName="mb-md">
-      {!isLoadingAccount && address &&
-      <BuySetModal handleApproveTokens={handleApproveTokens} modalUp={modalUp} handleModalDown={handleModalDown} setName={setName} />}
+      {!isLoadingAccount && address && writeContracts && contracts &&
+      <BuySetModal writeContracts={writeContracts} contracts={contracts} tx={tx} modalUp={modalUp} handleModalDown={handleModalDown} setName={setName} address={address} set={set} gasPrice={gasPrice} />}
       <Col span={24} style={{ textAlign:'center' }} >
         <Title level={2}>Total Portfolio Value: {balance} USD</Title>
       </Col>

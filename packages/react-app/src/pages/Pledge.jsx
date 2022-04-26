@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import ReactGA from 'react-ga4'
 import { Col, Row, Typography } from 'antd'
 
 import PledgeDisplay from '../components/pledge/PledgeDisplay'
@@ -10,6 +11,9 @@ import { WalletContext } from '../contexts/WalletContext'
 const { Title, Paragraph } = Typography
 
 const Pledge = () => {
+  ReactGA.initialize('G-L9J2W0LSQS')
+  ReactGA.send('pageview')
+
   const { address } = useContext(NetworkContext)
   const { isPledged, tonsPledged } = useContext(WalletContext)
 

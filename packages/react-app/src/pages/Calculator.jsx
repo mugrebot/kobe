@@ -1,3 +1,4 @@
+import ReactGA from 'react-ga4'
 import { Col, Row } from 'antd'
 
 import EmailSection from '../components/CalculatorForms/EmailSection'
@@ -12,6 +13,9 @@ import { CalculatorProvider } from '../contexts/CalculatorContext'
 import useFormStep from '../hooks/useFormStep'
 
 const Index = () => {
+  ReactGA.initialize('G-L9J2W0LSQS')
+  ReactGA.send('pageview')
+
   const { step, nextStep, backStep } = useFormStep()
 
   return (

@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import React, { useContext, useEffect, useState } from 'react'
+import ReactGA from 'react-ga4'
 import { Col, Row, Space, Typography } from 'antd'
 import { useContractReader, useGasPrice } from 'eth-hooks'
 
@@ -19,6 +20,9 @@ import { useTreejerGraph } from '../hooks/useTreejerGraph'
 const { Title, Text } = Typography
 
 const RegenArt = () => {
+  ReactGA.initialize('G-L9J2W0LSQS')
+  ReactGA.send('pageview')
+
   const { address, targetNetwork, userSigner, isLoadingAccount } = useContext(NetworkContext)
   const { contracts, writeContracts, yourKTBalance, yourETBalance } = useContext(WalletContext)
   const [isBCTAmountApproved, setIsBCTAmountApproved] = useState()

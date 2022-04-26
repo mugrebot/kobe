@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
+import ReactGA from 'react-ga4'
 import { Card, Col, Image, Row, Space, Typography } from 'antd'
 
 import { CardCustom } from '../components/CardCustom'
@@ -18,6 +19,9 @@ import walletMock from './wallet-data.json'
 
 // eslint-disable-next-line max-lines-per-function
 const Wallet = () => {
+  ReactGA.initialize('G-L9J2W0LSQS')
+  ReactGA.send('pageview')
+
   const { address, isLoadingAccount } = useContext(NetworkContext)
   const location = useHistory()
   const { hasCalculator, resetCalculator } = useContext(IsPledgedContext)
@@ -38,10 +42,10 @@ const Wallet = () => {
   useEffect(() => {
     const walletInfo = walletMock
 
-    if (!isLoadingAccount) {
-      walletInfo.data.info[0].quantity = address && <CarbonFYI currentAddress={address} metric="txs" />
-      walletInfo.data.info[1].quantity = address && <CarbonFYI currentAddress={address} metric="gas" />
-      walletInfo.data.info[2].quantity = address && <CarbonFYI currentAddress={address} />
+    if (address) {
+      walletInfo.data.info[0].quantity = <CarbonFYI currentAddress={address} metric="txs" />
+      walletInfo.data.info[1].quantity = <CarbonFYI currentAddress={address} metric="gas" />
+      walletInfo.data.info[2].quantity = <CarbonFYI currentAddress={address} />
     }
     setDataWallet(walletInfo)
   }, [address, isLoadingAccount])
@@ -89,7 +93,7 @@ const Wallet = () => {
         <Col xs={24} md={22}>
           <Row justify="space-between">
             <Col xs={24} md={11}>
-              {dataWallet && (
+              {dataWallet && address && (
                 <CardCustom title="Your Wallet Emissions" cardType="wallet" items={dataWallet.data.info} />
               )}
               {isLoadingAccount && !address && <ConnectButton />}
