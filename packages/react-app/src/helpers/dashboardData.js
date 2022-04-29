@@ -3,7 +3,7 @@ import CarbonFYI from '../components/common/CarbonFYI'
 const { utils } = require('ethers')
 
 // eslint-disable-next-line max-params
-export const getFightData = (BTC = 0, CO2 = 0, NCT = 0, KLIMA = 0, sKLIMA = 0, trees = 0, USDPrices = 0, isPledged) => [
+export const getFightData = (BTC = 0, CO2 = 0, NCT = 0, KLIMA = 0, sKLIMA = 0, trees = 0, USDPrices = 0, CBTC = 0, CNBED = 0, CBTCPrice = 0, CNBEDPrice = 0, isPledged) => [
   {
     id: 1,
     srcIcon: '/icon/tree.svg',
@@ -41,7 +41,9 @@ export const getFightData = (BTC = 0, CO2 = 0, NCT = 0, KLIMA = 0, sKLIMA = 0, t
             ((KLIMA && KLIMA > 0 ? KLIMA : 0) / Math.pow(10, 9)) *
               (USDPrices && USDPrices['klima-dao'] && USDPrices['klima-dao'].usd || 0) +
               ((sKLIMA && sKLIMA > 0 ? sKLIMA : 0) / Math.pow(10, 9)) *
-                (USDPrices && USDPrices['staked-klima'] && USDPrices['staked-klima'].usd || 0)
+                (USDPrices && USDPrices['staked-klima'] && USDPrices['staked-klima'].usd || 0) +
+            ((CBTC && CBTC > 0 ? CBTC : 0) / Math.pow(10, 18)) * (CBTCPrice || 0) +
+            ((CNBED && CNBED > 0 ? CNBED : 0) / Math.pow(10, 18)) * (CNBEDPrice || 0)
         ).toFixed(2),
     text: 'USD invested/staked',
     isBold: true,

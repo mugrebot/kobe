@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Col, Row, Typography } from 'antd'
-import { ethers, utils } from 'ethers'
-import { BigNumber } from 'set.js'
 
 import { IndexContext } from '../../contexts/IndexContext'
 import { WalletContext } from '../../contexts/WalletContext'
@@ -14,7 +12,7 @@ const { Title } = Typography
 const MyRegenPositions = ({ handleModalUp }) => {
   const [showAll, setShowAll] = useState(false)
   const { USDPrices, walletBalance } = useContext(WalletContext)
-  const { indexListed, indexContextDetails, CNBEDPrice, CBTCPrice } = useContext(IndexContext)
+  const { CNBEDPrice, CBTCPrice } = useContext(IndexContext)
   const {
     polygonBCTBalance: BTC,
     polygonMCO2Balance: MCO2,
@@ -32,11 +30,7 @@ const MyRegenPositions = ({ handleModalUp }) => {
     if (USDPrices && BTC && MCO2 && NCT && KLIMA && sKLIMA && CNBED && CBTC) {
       const tableData = createTableData(USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, CNBEDPrice, CBTCPrice)
 
-
-
       setTableData(tableData)
-      // console.log(CNBEDPrice)
-
     }
   }, [USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, CNBEDPrice, CBTCPrice])
 

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import React, { useContext, useEffect,useState } from 'react'
-import { ethers, utils } from 'ethers'
+import { utils } from 'ethers'
 import Set from 'set.js'
 
 import { NetworkContext } from './NetworkContext'
@@ -93,10 +93,6 @@ export const IndexContextProvider = ({ children }) => {
 
           setCNBEDPrice(CNBED_price)
           setCBTCPrice(CBTC_price)
-
-
-
-
         }
       }
 

@@ -8,6 +8,7 @@ import ConnectButton from '../components/common/ConnectButton'
 import BuySetModal from '../components/RegenDefi/BuySetModal'
 import MyRegenPositionsFull from '../components/RegenDefi/MyRegenPositionsFull'
 import SimpleRamp from '../components/RegenDefi/SimpleRamp'
+import { IndexContext } from '../contexts/IndexContext'
 import { NetworkContext } from '../contexts/NetworkContext'
 import { WalletContext } from '../contexts/WalletContext'
 import { Transactor } from '../helpers'
@@ -34,8 +35,9 @@ const ReFi = () => {
   ReactGA.send('pageview')
 
   const { contracts, USDPrices, walletBalance, isPledged, isLoadingBalances, writeContracts } = useContext(WalletContext)
-  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance } = walletBalance
+  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance  } = walletBalance
   const { address, isLoadingAccount, injectedProvider, targetNetwork, userSigner } = useContext(NetworkContext)
+  const { CNBEDPrice, CBTCPrice } = useContext(IndexContext)
 
   const [balance,setBalance] = useState(0)
   const [set,setSet] = useState()
@@ -80,16 +82,19 @@ const ReFi = () => {
       polygonSKlimaBalance,
       0,
       USDPrices,
+      polygonCNBEDBalance,
+      polygonCBTCBalance,
+      CBTCPrice,
+      CNBEDPrice,
       isPledged,
     )
 
     setBalance(fightData[2].quantity)
-    console.log(fightData)
 
   }, [isLoadingBalances])
 
   return (
-    <Row justify="center" lassName="mb-md">
+    <Row justify="center" className="mb-md">
       {!isLoadingAccount && address && writeContracts && contracts &&
       <BuySetModal writeContracts={writeContracts} contracts={contracts} tx={tx} modalUp={modalUp} handleModalDown={handleModalDown} setName={setName} address={address} set={set} gasPrice={gasPrice} />}
       <Col span={24} style={{ textAlign:'center' }} >

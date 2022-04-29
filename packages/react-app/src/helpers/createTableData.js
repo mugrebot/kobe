@@ -1,19 +1,8 @@
-import { useContext } from 'react'
-
-import { IndexContext,IndexContextProvider } from '../contexts/IndexContext'
-
-
-
-
-
-
 /* eslint-disable max-lines-per-function */
 const { utils } = require('ethers')
 
-
 // eslint-disable-next-line max-params
 export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, CNBEDPrice, CBTCPrice) => {
-
 
   const MCO2formated = utils.formatUnits(MCO2, 18)
   const BTCformated = utils.formatUnits(BTC, 18)
@@ -23,7 +12,6 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
   const CNBEDformated = utils.formatUnits(CNBED, 18)
   const CBTCformated = utils.formatUnits(CBTC, 18)
 
-
   const MCO2BalanceUSD = MCO2formated * USDPrices['moss-carbon-credit']?.usd || 0
   const BCTBalanceUSD = BTCformated * USDPrices['toucan-protocol-base-carbon-tonne']?.usd || 0
   const NCTBalanceUSD = NCTformated * USDPrices['toucan-protocol-nature-carbon-tonne']?.usd || 0
@@ -31,10 +19,6 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
   const sKLIMABalanceUSD = sKLIMAformated * USDPrices['staked-klima']?.usd || 0
   const CNBEDBalanceUSD = CNBEDformated * CNBEDPrice || 0
   const CBTCBalanceUSD = CBTCformated * CBTCPrice || 0
-
-
-
-
 
   const tableData = [
     {
@@ -143,7 +127,7 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
       co2: Number(CNBEDformated).toFixed(2),
       description: `Koywe's Carbon Negative BED Index on Polygon Network. 33% WBTC, 33% WETH, 33% DeFi Pulse Index, 1% NCT.`,
       contract: {
-        title: '0x0765425b334D7DB1f374D03f4261aC191172BEF7',
+        title: '0x0765425b334d7db1f374d03f4261ac191172bef7',
         url: 'https://polygonscan.com/address/0x0765425b334D7DB1f374D03f4261aC191172BEF7',
       },
       buy: {
@@ -163,7 +147,7 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
       co2: Number(CBTCformated).toFixed(2),
       description: `Koywe's Clean BTC Index on Polygon Network. 99% WBTC, 1% NCT.`,
       contract: {
-        title: '0x0765425b334D7DB1f374D03f4261aC191172BEF7',
+        title: '0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',
         url: 'https://polygonscan.com/address/0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',
       },
       buy: {
