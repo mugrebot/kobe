@@ -84,6 +84,7 @@ const ReFi = () => {
     )
 
     setBalance(fightData[2].quantity)
+    console.log(fightData)
 
   }, [isLoadingBalances])
 

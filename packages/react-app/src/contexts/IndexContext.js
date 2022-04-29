@@ -1,9 +1,10 @@
-
+/* eslint-disable max-lines-per-function */
 import React, { useContext, useEffect,useState } from 'react'
 import { ethers, utils } from 'ethers'
 import Set from 'set.js'
 
 import { NetworkContext } from './NetworkContext'
+import { WalletContext } from './WalletContext'
 
 export const IndexContext = React.createContext({
   indexListed: {},
@@ -14,6 +15,9 @@ export const IndexContext = React.createContext({
   NCTProportion: {},
   CWBTCProportion: {},
   CNTCProportion: {},
+  CNBEDPrice:{},
+  CBTCPrice:{},
+
 })
 
 export const IndexContextProvider = ({ children }) => {
@@ -32,6 +36,7 @@ export const IndexContextProvider = ({ children }) => {
   }
 
   const { address, isLoadingAccount, injectedProvider, targetNetwork, userSigner } = useContext(NetworkContext)
+  const { USDPrices } = useContext(WalletContext)
 
   const [indexContextDetails, setIndexContextDetails] = useState(null)
   const [WETHProportion, setWethProportion] = useState(null)
@@ -41,6 +46,9 @@ export const IndexContextProvider = ({ children }) => {
 
   const [CWBTCProportion, setCWBTCProportion] = useState(null)
   const [CNTCProportion, setCNTCProportion] = useState(null)
+
+  const [CNBEDPrice, setCNBEDPrice] = useState(null)
+  const [CBTCPrice, setCBTCPrice] = useState(null)
 
 
   const indexListed = ['0x0765425b334D7DB1f374D03f4261aC191172BEF7', '0x7958E9fa5cf56aEBeDd820df4299E733f7E8e5Dd']
@@ -80,6 +88,12 @@ export const IndexContextProvider = ({ children }) => {
             setCNTCProportion(utils.formatUnits((indexContextDetails[1].positions[1].unit), 18) || 0)
           }
 
+          const CNBED_price = (BTCProportion*(USDPrices['wrapped-bitcoin']?.usd)+ WETHProportion*(USDPrices.weth?.usd)+ DPIProportion*(USDPrices['defipulse-index']?.usd)+ NCTProportion*(USDPrices['toucan-protocol-nature-carbon-tonne']?.usd))
+          const CBTC_price = ((USDPrices['wrapped-bitcoin']?.usd*CWBTCProportion) + (USDPrices['toucan-protocol-nature-carbon-tonne']?.usd*CNTCProportion))
+
+          setCNBEDPrice(CNBED_price)
+          setCBTCPrice(CBTC_price)
+
 
 
 
@@ -102,6 +116,8 @@ export const IndexContextProvider = ({ children }) => {
     NCTProportion,
     CWBTCProportion,
     CNTCProportion,
+    CNBEDPrice,
+    CBTCPrice,
 
 
   }
