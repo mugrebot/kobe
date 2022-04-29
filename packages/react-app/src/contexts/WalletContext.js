@@ -64,7 +64,7 @@ export const WalletContextProvider = ({ children }) => {
   useEffect(() => {
     const getData = async () => {
       const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=toucan-protocol-base-carbon-tonne,toucan-protocol-nature-carbon-tonne,moss-carbon-credit,klima-dao,staked-klima&vs_currencies=usd',
+        'https://api.coingecko.com/api/v3/simple/price?ids=defipulse-index,weth,wrapped-bitcoin,toucan-protocol-base-carbon-tonne,toucan-protocol-nature-carbon-tonne,moss-carbon-credit,klima-dao,staked-klima&vs_currencies=usd',
       )
       const data = await response.json()
 

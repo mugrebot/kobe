@@ -8,6 +8,7 @@ import ConnectButton from '../components/common/ConnectButton'
 import BuySetModal from '../components/RegenDefi/BuySetModal'
 import MyRegenPositionsFull from '../components/RegenDefi/MyRegenPositionsFull'
 import SimpleRamp from '../components/RegenDefi/SimpleRamp'
+import { IndexContext } from '../contexts/IndexContext'
 import { NetworkContext } from '../contexts/NetworkContext'
 import { WalletContext } from '../contexts/WalletContext'
 import { Transactor } from '../helpers'
@@ -34,8 +35,9 @@ const ReFi = () => {
   ReactGA.send('pageview')
 
   const { contracts, USDPrices, walletBalance, isPledged, isLoadingBalances, writeContracts } = useContext(WalletContext)
-  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance } = walletBalance
+  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance  } = walletBalance
   const { address, isLoadingAccount, injectedProvider, targetNetwork, userSigner } = useContext(NetworkContext)
+  const { CNBEDPrice, CBTCPrice } = useContext(IndexContext)
 
   const [balance,setBalance] = useState(0)
   const [set,setSet] = useState()
@@ -80,6 +82,10 @@ const ReFi = () => {
       polygonSKlimaBalance,
       0,
       USDPrices,
+      polygonCNBEDBalance,
+      polygonCBTCBalance,
+      CBTCPrice,
+      CNBEDPrice,
       isPledged,
     )
 

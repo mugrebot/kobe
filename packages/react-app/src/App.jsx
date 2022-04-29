@@ -2,6 +2,7 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import { MainLayout } from './components/layouts/MainLayout'
+import { IndexContextProvider } from './contexts/IndexContext'
 import { IsPledgedProvider } from './contexts/IsPledgedContext'
 import { WalletContextProvider } from './contexts/WalletContext'
 import CalculatorPage from './pages/Calculator'
@@ -21,37 +22,39 @@ const App = () => {
   return (
     <WalletContextProvider>
       <IsPledgedProvider>
-        <MainLayout NETWORKCHECK>
-          <Switch>
-            <Route exact path={['/','/dashboard']}>
-              <Dashboard />
-            </Route>
-            <Route exact path="/ranking">
-              <Ranking />
-            </Route>
-            <Route exact path="/regen-art">
-              <RegenArt />
-            </Route>
-            <Route exact path="/pledge">
-              <Pledge />
-            </Route>
-            <Route exact path="/journey">
-              <Journey />
-            </Route>
-            <Route path="/regen-defi">
-              <ReFi />
-            </Route>
-            <Route exact path="/debug">
-              <DebugPage />
-            </Route>
-            <Route exact path="/emission">
-              <EmissionPage />
-            </Route>
-            <Route exact path="/calculator">
-              <CalculatorPage />
-            </Route>
-          </Switch>
-        </MainLayout>
+        <IndexContextProvider>
+          <MainLayout NETWORKCHECK>
+            <Switch>
+              <Route exact path={['/','/dashboard']}>
+                <Dashboard />
+              </Route>
+              <Route exact path="/ranking">
+                <Ranking />
+              </Route>
+              <Route exact path="/regen-art">
+                <RegenArt />
+              </Route>
+              <Route exact path="/pledge">
+                <Pledge />
+              </Route>
+              <Route exact path="/journey">
+                <Journey />
+              </Route>
+              <Route path="/regen-defi">
+                <ReFi />
+              </Route>
+              <Route exact path="/debug">
+                <DebugPage />
+              </Route>
+              <Route exact path="/emission">
+                <EmissionPage />
+              </Route>
+              <Route exact path="/calculator">
+                <CalculatorPage />
+              </Route>
+            </Switch>
+          </MainLayout>
+        </IndexContextProvider>
       </IsPledgedProvider>
     </WalletContextProvider>
   )

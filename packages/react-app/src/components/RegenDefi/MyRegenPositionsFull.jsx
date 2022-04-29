@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Col, Row, Typography } from 'antd'
 
+import { IndexContext } from '../../contexts/IndexContext'
 import { WalletContext } from '../../contexts/WalletContext'
 import { createTableData } from '../../helpers/createTableData'
 import { StyledButton } from '../common/StyledButton'
@@ -11,6 +12,7 @@ const { Title } = Typography
 const MyRegenPositions = ({ handleModalUp }) => {
   const [showAll, setShowAll] = useState(false)
   const { USDPrices, walletBalance } = useContext(WalletContext)
+  const { CNBEDPrice, CBTCPrice } = useContext(IndexContext)
   const {
     polygonBCTBalance: BTC,
     polygonMCO2Balance: MCO2,
@@ -22,13 +24,15 @@ const MyRegenPositions = ({ handleModalUp }) => {
   } = walletBalance
   const [tableData, setTableData] = React.useState([])
 
+
+
   useEffect(() => {
     if (USDPrices && BTC && MCO2 && NCT && KLIMA && sKLIMA && CNBED && CBTC) {
-      const tableData = createTableData(USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC)
+      const tableData = createTableData(USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, CNBEDPrice, CBTCPrice)
 
       setTableData(tableData)
     }
-  }, [USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC])
+  }, [USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, CNBEDPrice, CBTCPrice])
 
   return (
     <>

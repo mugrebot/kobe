@@ -2,7 +2,8 @@
 const { utils } = require('ethers')
 
 // eslint-disable-next-line max-params
-export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC) => {
+export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, CNBEDPrice, CBTCPrice) => {
+
   const MCO2formated = utils.formatUnits(MCO2, 18)
   const BTCformated = utils.formatUnits(BTC, 18)
   const NCTformated = utils.formatUnits(NCT, 18)
@@ -16,8 +17,8 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
   const NCTBalanceUSD = NCTformated * USDPrices['toucan-protocol-nature-carbon-tonne']?.usd || 0
   const KLIMABalanceUSD = KLIMAformated * USDPrices['klima-dao']?.usd || 0
   const sKLIMABalanceUSD = sKLIMAformated * USDPrices['staked-klima']?.usd || 0
-  const CNBEDBalanceUSD = CNBEDformated * USDPrices.cnbed?.usd || 0
-  const CBTCBalanceUSD = CBTCformated * USDPrices.cbtc?.usd || 0
+  const CNBEDBalanceUSD = CNBEDformated * CNBEDPrice || 0
+  const CBTCBalanceUSD = CBTCformated * CBTCPrice || 0
 
   const tableData = [
     {
@@ -126,7 +127,7 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
       co2: Number(CNBEDformated).toFixed(2),
       description: `Koywe's Carbon Negative BED Index on Polygon Network. 33% WBTC, 33% WETH, 33% DeFi Pulse Index, 1% NCT.`,
       contract: {
-        title: '0x0765425b334D7DB1f374D03f4261aC191172BEF7',
+        title: '0x0765425b334d7db1f374d03f4261ac191172bef7',
         url: 'https://polygonscan.com/address/0x0765425b334D7DB1f374D03f4261aC191172BEF7',
       },
       buy: {

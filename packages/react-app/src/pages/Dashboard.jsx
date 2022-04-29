@@ -10,6 +10,7 @@ import { CardInfo } from '../components/dashboard/CardInfo'
 import MyRegenArt from '../components/dashboard/MyRegenArt'
 import MyRegenPositions from '../components/dashboard/MyRegenPositions'
 import { ProgressInfo } from '../components/dashboard/ProgressInfo'
+import { IndexContext } from '../contexts/IndexContext'
 import { NetworkContext } from '../contexts/NetworkContext'
 import { WalletContext } from '../contexts/WalletContext'
 import { getFightData, getPlightData } from '../helpers/dashboardData'
@@ -25,8 +26,9 @@ const Dashboard = () => {
   const router = useHistory()
   const { address, isLoadingAccount } = useContext(NetworkContext)
   const { USDPrices, walletBalance, tonsPledged, isPledged, yourKTBalance, yourTreejerBalance, yourETBalance, CO2TokenBalance } = useContext(WalletContext)
-  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance } =
+  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance } =
     walletBalance
+  const { CNBEDPrice, CBTCPrice } = useContext(IndexContext)
   const [fightData, setFightData] = useState([])
   const [plightData, setPlightData] = useState([])
   const [yourPlight, setYourPlight] = useState()
@@ -45,6 +47,10 @@ const Dashboard = () => {
       polygonSKlimaBalance,
       trees,
       USDPrices,
+      polygonCNBEDBalance,
+      polygonCBTCBalance,
+      CBTCPrice,
+      CNBEDPrice,
       isPledged,
     )
 
