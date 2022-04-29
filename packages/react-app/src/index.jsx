@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import { ThemeProvider } from 'styled-components'
 
@@ -18,11 +18,11 @@ const client = new ApolloClient({
 ReactDOM.render(
   <ApolloProvider client={client}>
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
+      <HashRouter>
         <NetworkContextProvider>
           <App subgraphUri={subgraphUri} />
         </NetworkContextProvider>
-      </BrowserRouter>
+      </HashRouter>
     </ThemeProvider>
   </ApolloProvider>,
   document.getElementById('root'),
