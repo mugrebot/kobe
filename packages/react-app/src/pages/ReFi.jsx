@@ -88,7 +88,7 @@ const ReFi = () => {
   }, [isLoadingBalances])
 
   return (
-    <Row justify="center" lassName="mb-md">
+    <Row justify="center" className="mb-md">
       {!isLoadingAccount && address && writeContracts && contracts &&
       <BuySetModal writeContracts={writeContracts} contracts={contracts} tx={tx} modalUp={modalUp} handleModalDown={handleModalDown} setName={setName} address={address} set={set} gasPrice={gasPrice} />}
       <Col span={24} style={{ textAlign:'center' }} >
