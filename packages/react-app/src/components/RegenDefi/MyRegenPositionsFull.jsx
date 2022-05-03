@@ -12,7 +12,7 @@ const { Title } = Typography
 const MyRegenPositions = ({ handleModalUp }) => {
   const [showAll, setShowAll] = useState(false)
   const { USDPrices, walletBalance } = useContext(WalletContext)
-  const { CNBEDPrice, CBTCPrice } = useContext(IndexContext)
+  const { indexUSDPrices } = useContext(IndexContext)
   const {
     polygonBCTBalance: BTC,
     polygonMCO2Balance: MCO2,
@@ -28,11 +28,11 @@ const MyRegenPositions = ({ handleModalUp }) => {
 
   useEffect(() => {
     if (USDPrices && BTC && MCO2 && NCT && KLIMA && sKLIMA && CNBED && CBTC) {
-      const tableData = createTableData(USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, CNBEDPrice, CBTCPrice)
+      const tableData = createTableData(USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, indexUSDPrices)
 
       setTableData(tableData)
     }
-  }, [USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, CNBEDPrice, CBTCPrice])
+  }, [USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, indexUSDPrices])
 
   return (
     <>

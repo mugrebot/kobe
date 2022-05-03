@@ -35,43 +35,31 @@ const ReFi = () => {
   ReactGA.send('pageview')
 
   const { contracts, USDPrices, walletBalance, isPledged, isLoadingBalances, writeContracts } = useContext(WalletContext)
-  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance  } = walletBalance
-  const { address, isLoadingAccount, injectedProvider, targetNetwork, userSigner } = useContext(NetworkContext)
-  const { CNBEDPrice, CBTCPrice } = useContext(IndexContext)
+  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance, polygonWethBalance  } = walletBalance
+  const { address, isLoadingAccount, targetNetwork, userSigner } = useContext(NetworkContext)
+  const { setObject, indexContextDetails, indexUSDPrices } = useContext(IndexContext)
 
   const [balance,setBalance] = useState(0)
-  const [set,setSet] = useState()
-  const [setName,setSetName] = useState('')
+  const [currentSet,setCurrentSet] = useState(null)
   const [modalUp, setModalUp] = useState(false)
 
   const gasPrice = useGasPrice(targetNetwork, 'fastest')
   const tx = Transactor(userSigner, gasPrice)
 
-  const handleModalUp = set => {
+  const handleModalUp = symbol => {
     setModalUp(true)
-    setSetName(set)
+
+    const _currentSet = indexContextDetails.find(set => {
+      return set.symbol === symbol
+    })
+
+    setCurrentSet(_currentSet)
   }
 
   const handleModalDown = () => {
     setModalUp(false)
-    setSetName('')
+    setCurrentSet(null)
   }
-
-  useEffect(() => {
-    const getSet = async () => {
-      if(injectedProvider) {
-        const SetJsConfig = {
-          ethersProvider: injectedProvider,
-          ...SetJsPolygonAddresses,
-        }
-
-        setSet(new Set(SetJsConfig))
-
-      }
-    }
-
-    getSet()
-  }, [injectedProvider])
 
   useEffect(() => {
     const fightData = getFightData(
@@ -84,8 +72,7 @@ const ReFi = () => {
       USDPrices,
       polygonCNBEDBalance,
       polygonCBTCBalance,
-      CBTCPrice,
-      CNBEDPrice,
+      indexUSDPrices,
       isPledged,
     )
 
@@ -96,7 +83,19 @@ const ReFi = () => {
   return (
     <Row justify="center" className="mb-md">
       {!isLoadingAccount && address && writeContracts && contracts &&
-      <BuySetModal writeContracts={writeContracts} contracts={contracts} tx={tx} modalUp={modalUp} handleModalDown={handleModalDown} setName={setName} address={address} set={set} gasPrice={gasPrice} />}
+      <BuySetModal
+        set={setObject}
+        setDetails={currentSet}
+        writeContracts={writeContracts}
+        contracts={contracts}
+        tx={tx}
+        modalUp={modalUp}
+        handleModalDown={handleModalDown}
+        address={address}
+        gasPrice={gasPrice}
+        USDPrices={USDPrices}
+        wethBalance={polygonWethBalance}
+      />}
       <Col span={24} style={{ textAlign:'center' }} >
         <Title level={2}>Total Portfolio Value: {balance} USD</Title>
       </Col>

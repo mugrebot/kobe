@@ -28,7 +28,7 @@ const Dashboard = () => {
   const { USDPrices, walletBalance, tonsPledged, isPledged, yourKTBalance, yourTreejerBalance, yourETBalance, CO2TokenBalance } = useContext(WalletContext)
   const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance } =
     walletBalance
-  const { CNBEDPrice, CBTCPrice } = useContext(IndexContext)
+  const { indexUSDPrices } = useContext(IndexContext)
   const [fightData, setFightData] = useState([])
   const [plightData, setPlightData] = useState([])
   const [yourPlight, setYourPlight] = useState()
@@ -49,8 +49,7 @@ const Dashboard = () => {
       USDPrices,
       polygonCNBEDBalance,
       polygonCBTCBalance,
-      CBTCPrice,
-      CNBEDPrice,
+      indexUSDPrices,
       isPledged,
     )
 

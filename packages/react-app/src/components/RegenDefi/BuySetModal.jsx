@@ -17,20 +17,20 @@ const StyledTable = styled(Table)`
 `
 
 // TODO: Add prices to preview. Add option to get new quotes from 0x after some time has gone or do it automatically
-export default function BuySetModal({ writeContracts, contracts, tx, modalUp, handleModalDown, setName, address, set, gasPrice }) {
+export default function BuySetModal({ writeContracts, contracts, tx, modalUp, handleModalDown, setDetails, address, set, gasPrice, USDPrices, wethBalance }) {
   const tokenTexts = {
-    'Buy CNBED' : [
-      'CNBED',
-      'Carbon Negative BED combines the main names in crypto, BTC and ETH, with the best of DeFi, via DeFie Pulse, Carbon Neutral! Using Toucan NCT.',
-      'https://www.tokensets.com/v2/set/polygon/0x0765425b334d7db1f374d03f4261ac191172bef7',
-      '0x0765425b334d7db1f374d03f4261ac191172bef7',
-    ],
-    'Buy CBTC' : [
-      'CBTC',
-      'Clean Bitcoin lets you invest in the greatest store of value of our time, net-zero! The 1% of NCT tokens assures, at current prices, 38 years of green BTC hodling.',
-      'https://www.tokensets.com/v2/set/polygon/0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',
-      '0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',
-    ],
+    'CNBED' : {
+      address: '0x0765425b334d7db1f374d03f4261ac191172bef7',
+      symbol: 'CNBED',
+      description: 'Carbon Negative BED combines the main names in crypto, BTC and ETH, with the best of DeFi, via DeFie Pulse, Carbon Neutral! Using Toucan NCT.',
+      tokensetsURL: 'https://www.tokensets.com/v2/set/polygon/0x0765425b334d7db1f374d03f4261ac191172bef7',
+    },
+    'CBTC' : {
+      address: '0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',
+      symbol: 'CBTC',
+      description: 'Clean Bitcoin lets you invest in the greatest store of value of our time, net-zero! The 1% of NCT tokens assures, at current prices, 38 years of green BTC hodling.',
+      tokensetsURL: 'https://www.tokensets.com/v2/set/polygon/0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',
+    },
   }
   const columns = [
     {
@@ -54,11 +54,19 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
         <>{(text * (indexAmount?indexAmount:1)).toFixed(6)}</>
       ),
     },
+    {
+      title: 'Value',
+      dataIndex: 'value',
+      key: 'value',
+      render: text => (
+        <>${(text * (indexAmount?indexAmount:1)).toFixed(2)}</>
+      ),
+    },
   ]
+  const wethFormated = wethBalance && utils.formatUnits(wethBalance, 18)
   const [setPositions,setSetPositions] = useState()
   const [tradeQuotes,setTradeQuotes] = useState()
   const [quoting,setQuoting] = useState(false)
-  const [setDetails,setSetDetails] = useState()
   const [indexAmount,setIndexAmount] = useState()
   const [approving, setApproving] = useState()
   const [buying, setBuying] = useState()
@@ -92,12 +100,9 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
           rawAmount: utils.parseUnits(`${(utils.formatUnits(token.unit, tokenDecimals) * _indexAmount).toFixed(tokenDecimals)}`,tokenDecimals).toString(),
           ignore: wethAddress === token.component,
         })
-        // console.log((utils.formatUnits(token.unit, tokenDecimals) * _indexAmount))
       }
 
-      // console.log('_proportions',_proportions)
-
-      const quotes = await set.utils.batchFetchSwapQuoteAsync(_proportions,true,tokenTexts[setName][3],set.setToken,gasPrice)
+      const quotes = await set.utils.batchFetchSwapQuoteAsync(_proportions,true,tokenTexts[setDetails.symbol].address,set.setToken,gasPrice)
 
       setTradeQuotes(quotes.map(quote => {
         return quote.calldata
@@ -110,10 +115,8 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
         totalWeth += Number(utils.formatEther(quote.fromTokenAmount)) * (1 + 0.03) // adding 3% worked better than the 0x slippage... TODO: a better way to calculate this
 
       setBuyWethAmount(totalWeth.toFixed(18))
-
-      // console.log('quotes',quotes)
     } else {
-      setBuyWethAmount(0)
+      setBuyWethAmount(null)
       setTradeQuotes([])
     }
     setQuoting(false)
@@ -122,7 +125,7 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
   const handleIssuance = async () => {
     setBuying(true)// issueExactSetFromToken
     await tx(writeContracts.SETISSUER.issueExactSetFromToken(
-      tokenTexts[setName][3],
+      tokenTexts[setDetails.symbol].address,
       wethAddress,
       indexAmount && utils.parseEther(`${indexAmount}`),
       buyWethAmount && utils.parseEther(`${buyWethAmount}`),
@@ -135,15 +138,8 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
 
   useEffect(() => {
     const getSetDetails = async () => {
-      if(set && setName) {
-        const details = set && await set.setToken
-        .fetchSetDetailsAsync(
-          tokenTexts[setName][3],
-          ['0x38E5462BBE6A72F79606c1A0007468aA4334A92b'],
-          address,
-        )
-
-        const tokens = details.positions.map(token => {
+      if(set && setDetails) {
+        const tokens = setDetails.positions.map(token => {
           const _token = sushiTokenList.find(sushiToken => {
             return sushiToken.address === token.component
           })
@@ -153,18 +149,16 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
             logoURI: _token.logoURI,
             position: utils.formatUnits(token.unit, _token.decimals),
             name: _token.name,
+            value: USDPrices[_token.coingeckoId].usd * utils.formatUnits(token.unit, _token.decimals),
           }
         })
 
         setSetPositions(tokens)
-        setSetDetails(details)
-        // console.log('details',details)
-        // console.log('tokens',tokens)
       }
     }
 
     getSetDetails()
-  }, [address, set, setName])
+  }, [USDPrices, address, set, setDetails])
 
   useEffect(() => {
     const buyWethAmountBN = buyWethAmount && utils.parseEther(`${buyWethAmount}`)
@@ -174,11 +168,12 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
 
   return (
     <div>
-      <Modal title={setName}
+      <Modal title={`Buy ${setDetails && setDetails.symbol}`}
         visible={modalUp === true}
         onCancel={() => {
           handleModalDown()
-          setBuyWethAmount(0)
+          setBuyWethAmount(null)
+          setIndexAmount(null)
           setTradeQuotes([])
         }}
         footer={[
@@ -186,7 +181,8 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
             key='back'
             onClick={() => {
               handleModalDown()
-              setBuyWethAmount(0)
+              setBuyWethAmount(null)
+              setIndexAmount(null)
               setTradeQuotes([])
             }}
           >
@@ -194,13 +190,13 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
           </Button>,
         ]}>
           <Row justify="center" align="middle">
-            {setName && tokenTexts[setName][1]}
+            {setDetails && tokenTexts[setDetails.symbol].description}
           </Row>
           <Row justify="center" align="middle">
             <Card
               size="small"
               type="inner"
-              title={`${setName && tokenTexts[setName][0]} tokens to issue:`}
+              title={`${setDetails && setDetails.symbol} tokens to issue:`}
               style={{ width: 400, textAlign: 'left' }}
             >
               <Input
@@ -221,23 +217,30 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
             <Card
               size="small"
               type="inner"
-              title={`Paying in WETH:`}
-              extra={quoting && <LoadingOutlined />}
+              title={`Paying in WETH (Estimate):`}
+              extra={wethFormated < buyWethAmount && 'Not Enough WETH Balance' || quoting && <LoadingOutlined />}
               style={{ width: 400, textAlign: 'left' }}
             >
-              <Input
-                style={{ textAlign: 'center' }}
-                placeholder={'Cost in WETH'}
-                value={buyWethAmount}
-                disabled
-              />
+              <Input.Group compact>
+                <Input
+                  style={{ textAlign: 'center', width: '50%' }}
+                  placeholder={'Cost in WETH'}
+                  value={buyWethAmount && (buyWethAmount*1).toFixed(6)}
+                  disabled
+                />
+                <Input
+                  style={{ textAlign: 'center', width: '50%' }}
+                  placeholder={'Cost in USD'}
+                  value={buyWethAmount && `$${(buyWethAmount*USDPrices?.weth?.usd).toFixed(2)}`}
+                  disabled
+                />
+              </Input.Group>
             </Card>
             <br />
-            {/* <StyledButton href={setName && tokenTexts[setName][2]} target='_blank' $type='primary'>Learn more and buy shares</StyledButton> */}
             <StyledButton loading={approving} $type="primary" disabled={isWethApproved || !buyWethAmount} onClick={handleApproveTokens}>
               Approve WETH
             </StyledButton>
-            <StyledButton loading={buying} $type="primary" disabled={!isWethApproved || !buyWethAmount} onClick={handleIssuance}>
+            <StyledButton loading={buying} $type="primary" disabled={!isWethApproved || !buyWethAmount || wethFormated < buyWethAmount} onClick={handleIssuance}>
               Issue Index Tokens
             </StyledButton>
           </Row>
