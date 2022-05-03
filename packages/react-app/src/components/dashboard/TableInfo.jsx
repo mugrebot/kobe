@@ -28,7 +28,7 @@ export const TableInfo = ({ data }) => {
       key: 'position',
     },
     {
-      title: 'CO2 value (tons)',
+      title: 'Position (units)',
       dataIndex: 'co2',
       key: 'co2',
     },
