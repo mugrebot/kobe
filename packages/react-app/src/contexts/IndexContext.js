@@ -3,21 +3,16 @@ import React, { useContext, useEffect,useState } from 'react'
 import { utils } from 'ethers'
 import Set from 'set.js'
 
+import sushiTokenList from '../sushiTL.json'
+
 import { NetworkContext } from './NetworkContext'
 import { WalletContext } from './WalletContext'
 
 export const IndexContext = React.createContext({
+  setObject: undefined,
   indexListed: {},
   indexContextDetails: {},
-  WETHProportion: {},
-  BTCProportion: {},
-  DPIProportion: {},
-  NCTProportion: {},
-  CWBTCProportion: {},
-  CNTCProportion: {},
-  CNBEDPrice:{},
-  CBTCPrice:{},
-
+  indexUSDPrices: {},
 })
 
 export const IndexContextProvider = ({ children }) => {
@@ -38,24 +33,15 @@ export const IndexContextProvider = ({ children }) => {
   const { address, isLoadingAccount, injectedProvider, targetNetwork, userSigner } = useContext(NetworkContext)
   const { USDPrices } = useContext(WalletContext)
 
+  const [setObject, setSetObject] = useState(null)
   const [indexContextDetails, setIndexContextDetails] = useState(null)
-  const [WETHProportion, setWethProportion] = useState(null)
-  const [BTCProportion, setBTCProportion] = useState(null)
-  const [DPIProportion, setDPIProportion] = useState(null)
-  const [NCTProportion, setNCTProportion] = useState(null)
-
-  const [CWBTCProportion, setCWBTCProportion] = useState(null)
-  const [CNTCProportion, setCNTCProportion] = useState(null)
-
-  const [CNBEDPrice, setCNBEDPrice] = useState(null)
-  const [CBTCPrice, setCBTCPrice] = useState(null)
-
+  const [indexUSDPrices, setIndexUSDPrices] = useState(null)
 
   const indexListed = ['0x0765425b334D7DB1f374D03f4261aC191172BEF7', '0x7958E9fa5cf56aEBeDd820df4299E733f7E8e5Dd']
 
   useEffect(() => {
       const getSet = async () => {
-        if(injectedProvider && address) {
+        if(injectedProvider && address && USDPrices) {
           const SetJsConfig = {
             ethersProvider: injectedProvider,
             ...SetJsPolygonAddresses,
@@ -63,59 +49,48 @@ export const IndexContextProvider = ({ children }) => {
 
           const set = new Set(SetJsConfig)
 
+          setSetObject(set)
+
           const indexDetails = []
+          const indexPrices = {}
 
           for(const index of indexListed) {
-              const details = set && await set.setToken
-              .fetchSetDetailsAsync(
-              index,
-              ['0x38E5462BBE6A72F79606c1A0007468aA4334A92b'],
-              address,
-              )
+            let price = 0
+            const details = set && await set.setToken
+            .fetchSetDetailsAsync(
+            index,
+            ['0x38E5462BBE6A72F79606c1A0007468aA4334A92b'],
+            address,
+            )
 
-              indexDetails.push(details)
+            details.positions.forEach(position => {
+              const _token = sushiTokenList.find(sushiToken => {
+                return sushiToken.address === position.component
+              })
 
+              price += utils.formatUnits(position.unit,_token.decimals) * USDPrices[_token.coingeckoId].usd
+            })
+
+            indexDetails.push(details)
+            indexPrices[details.symbol] = price
           }
 
+          setIndexUSDPrices(indexPrices)
           setIndexContextDetails(indexDetails)
-
-          if(indexContextDetails) {
-            setWethProportion(utils.formatUnits((indexContextDetails[0].positions[0].unit), 18) || 0)
-            setBTCProportion(utils.formatUnits((indexContextDetails[0].positions[1].unit), 8) || 0)
-            setDPIProportion(utils.formatUnits((indexContextDetails[0].positions[2].unit), 18) || 0)
-            setNCTProportion(utils.formatUnits((indexContextDetails[0].positions[3].unit), 18) || 0)
-            setCWBTCProportion(utils.formatUnits((indexContextDetails[1].positions[0].unit), 8) || 0)
-            setCNTCProportion(utils.formatUnits((indexContextDetails[1].positions[1].unit), 18) || 0)
-          }
-
-          const CNBED_price = (BTCProportion*(USDPrices['wrapped-bitcoin']?.usd)+ WETHProportion*(USDPrices.weth?.usd)+ DPIProportion*(USDPrices['defipulse-index']?.usd)+ NCTProportion*(USDPrices['toucan-protocol-nature-carbon-tonne']?.usd))
-          const CBTC_price = ((USDPrices['wrapped-bitcoin']?.usd*CWBTCProportion) + (USDPrices['toucan-protocol-nature-carbon-tonne']?.usd*CNTCProportion))
-
-          setCNBEDPrice(CNBED_price)
-          setCBTCPrice(CBTC_price)
         }
       }
 
       getSet()
 
-    })
+    }, [USDPrices, address, injectedProvider])
 
 
 
   const value = {
-
+    setObject,
     indexListed,
     indexContextDetails,
-    WETHProportion,
-    BTCProportion,
-    DPIProportion,
-    NCTProportion,
-    CWBTCProportion,
-    CNTCProportion,
-    CNBEDPrice,
-    CBTCPrice,
-
-
+    indexUSDPrices,
   }
 
 

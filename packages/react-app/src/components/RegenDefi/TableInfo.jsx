@@ -64,7 +64,7 @@ export const TableInfo = ({ data, handleModalUp }) => {
       render: props => handleModalUp && props.meta && props.meta === 'index' ?
       <StyledButton
         onClick={() => {
-          handleModalUp(props.title)
+          handleModalUp(props.symbol)
         }}
         $type="primary">{props.title}
       </StyledButton>

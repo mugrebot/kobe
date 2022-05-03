@@ -2,7 +2,7 @@
 const { utils } = require('ethers')
 
 // eslint-disable-next-line max-params
-export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, CNBEDPrice, CBTCPrice) => {
+export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC, indexUSDPrices) => {
 
   const MCO2formated = utils.formatUnits(MCO2, 18)
   const BTCformated = utils.formatUnits(BTC, 18)
@@ -17,8 +17,8 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
   const NCTBalanceUSD = NCTformated * USDPrices['toucan-protocol-nature-carbon-tonne']?.usd || 0
   const KLIMABalanceUSD = KLIMAformated * USDPrices['klima-dao']?.usd || 0
   const sKLIMABalanceUSD = sKLIMAformated * USDPrices['staked-klima']?.usd || 0
-  const CNBEDBalanceUSD = CNBEDformated * CNBEDPrice || 0
-  const CBTCBalanceUSD = CBTCformated * CBTCPrice || 0
+  const CNBEDBalanceUSD = CNBEDformated * indexUSDPrices?.CNBED || 0
+  const CBTCBalanceUSD = CBTCformated * indexUSDPrices?.CBTC || 0
 
   const tableData = [
     {
@@ -132,6 +132,7 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
       },
       buy: {
         meta: 'index',
+        symbol: 'CNBED',
         title: 'Buy CNBED',
         url: 'https://www.tokensets.com/v2/set/polygon/0x0765425b334d7db1f374d03f4261ac191172bef7',
       },
@@ -152,6 +153,7 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
       },
       buy: {
         meta: 'index',
+        symbol: 'CBTC',
         title: 'Buy CBTC',
         url: 'https://www.tokensets.com/v2/set/polygon/0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',
       },

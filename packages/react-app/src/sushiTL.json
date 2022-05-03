@@ -5,7 +5,8 @@
     "symbol": "DAI",
     "decimals": 18,
     "chainId": 137,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/dai.jpg"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/dai.jpg",
+    "coingeckoId": "dai"
   },
   {
     "address": "0x85955046DF4668e1DD369D2DE9f3AEB98DD2A369",
@@ -13,7 +14,8 @@
     "name": "DefiPulse Index",
     "symbol": "DPI",
     "decimals": 18,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0x85955046DF4668e1DD369D2DE9f3AEB98DD2A369/logo.png"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0x85955046DF4668e1DD369D2DE9f3AEB98DD2A369/logo.png",
+    "coingeckoId": "defipulse-index"
   },
   {
     "name": "USD Coin",
@@ -21,7 +23,8 @@
     "symbol": "USDC",
     "decimals": 6,
     "chainId": 137,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg",
+    "coingeckoId": "usd-coin"
   },
   {
     "name": "Tether USD",
@@ -29,7 +32,8 @@
     "symbol": "USDT",
     "decimals": 6,
     "chainId": 137,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg",
+    "coingeckoId": "tether-usd-wormhole"
   },
   {
     "name": "Wrapped BTC",
@@ -37,7 +41,8 @@
     "symbol": "WBTC",
     "decimals": 8,
     "chainId": 137,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/btc.jpg"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/btc.jpg",
+    "coingeckoId": "wrapped-bitcoin"
   },
   {
     "name": "Wrapped Ether",
@@ -45,7 +50,8 @@
     "symbol": "WETH",
     "decimals": 18,
     "chainId": 137,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg",
+    "coingeckoId": "weth"
   },
   {
     "name": "Wrapped Matic",
@@ -53,7 +59,8 @@
     "symbol": "WMATIC",
     "decimals": 18,
     "chainId": 137,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/polygon.jpg"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/polygon.jpg",
+    "coingeckoId": "wmatic"
   },
   {
     "name": "Klima DAO",
@@ -61,7 +68,8 @@
     "symbol": "KLIMA",
     "decimals": 9,
     "chainId": 137,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0x4e78011Ce80ee02d2c3e649Fb657E45898257815/logo.png"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0x4e78011Ce80ee02d2c3e649Fb657E45898257815/logo.png",
+    "coingeckoId": "klima-dao"
   },
   {
     "name": "Toucan Protocol: Base Carbon Tonne",
@@ -69,7 +77,8 @@
     "symbol": "BCT",
     "decimals": 18,
     "chainId": 137,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0x2F800Db0fdb5223b3C3f354886d907A671414A7F/logo.png"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0x2F800Db0fdb5223b3C3f354886d907A671414A7F/logo.png",
+    "coingeckoId": "toucan-protocol-base-carbon-tonne"
   },
   {
     "name": "Nature Carbon Tonne",
@@ -77,6 +86,7 @@
     "symbol": "NCT",
     "decimals": 18,
     "chainId": 137,
-    "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0xD838290e877E0188a4A44700463419ED96c16107/logo.png"
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0xD838290e877E0188a4A44700463419ED96c16107/logo.png",
+    "coingeckoId": "toucan-protocol-nature-carbon-tonne"
   }
 ]
