@@ -19,7 +19,7 @@ const CardInfoItem = ({ srcIcon, quantity, text, isBold, mode = 'normal' }) => {
         <Image src={srcIcon} preview={false} />
       </Col>
 
-      <Col xs={{ span: 4 }} sm={{ span: 4 }} md={{ span: 6 }} lg={{ span: 4 }} xl={{ span: 4 }}>
+      <Col xs={{ span: 5 }} sm={{ span: 5 }} md={{ span: 7 }} lg={{ span: 5 }} xl={{ span: 5 }}>
         <Text
           className={`card-text ${isBold ? 'card-text--active' : ''}`}
           style={{ marginRight: hasNormalMode() ? '10px' : '0' }}
@@ -28,11 +28,11 @@ const CardInfoItem = ({ srcIcon, quantity, text, isBold, mode = 'normal' }) => {
         </Text>
       </Col>
       <Col
-        xs={{ span: 16 }}
-        sm={{ span: 16 }}
-        md={{ span: 12 }}
-        lg={{ span: hasNormalMode() ? 16 : 13 }}
-        xl={{ span: hasNormalMode() ? 16 : 12 }}
+        xs={{ span: 15 }}
+        sm={{ span: 15 }}
+        md={{ span: 11 }}
+        lg={{ span: hasNormalMode() ? 15 : 12 }}
+        xl={{ span: hasNormalMode() ? 15 : 11 }}
       >
         {' '}
         <Text className={`card-text ${isBold ? 'card-text--active' : ''}`}>{text}</Text>
