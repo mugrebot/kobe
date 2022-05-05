@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
 import React, { useEffect, useState } from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
@@ -16,7 +17,7 @@ const StyledTable = styled(Table)`
   width: 100%;
 `
 
-// TODO: Add prices to preview. Add option to get new quotes from 0x after some time has gone or do it automatically
+// TODO: Get new quotes from 0x after some time has gone by
 export default function BuySetModal({ writeContracts, contracts, tx, modalUp, handleModalDown, setDetails, address, set, gasPrice, USDPrices, wethBalance }) {
   const tokenTexts = {
     'CNBED' : {
@@ -123,7 +124,7 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
   }
 
   const handleIssuance = async () => {
-    setBuying(true)// issueExactSetFromToken
+    setBuying(true)
     await tx(writeContracts.SETISSUER.issueExactSetFromToken(
       tokenTexts[setDetails.symbol].address,
       wethAddress,
@@ -132,6 +133,7 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
       tradeQuotes,
       '0x38E5462BBE6A72F79606c1A0007468aA4334A92b',
       false,
+      { gasPrice: utils.parseUnits(`${gasPrice}`,9) },
     ))
     setBuying(false)
   }

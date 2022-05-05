@@ -32,7 +32,7 @@ export default function Transactor(providerOrSigner, gasPrice, etherscan) {
         network = await providerOrSigner.getNetwork()
       }
 
-      console.log('network', network)
+      if (DEBUG) console.log('network', network)
 
       let options = null
       let notify = null
