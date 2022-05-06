@@ -13,10 +13,8 @@ import {
   Tooltip,
 } from 'chart.js'
 
-import { StyledButton } from '../components/common/StyledButton'
 import { IndexContext } from '../contexts/IndexContext'
 import { NetworkContext } from '../contexts/NetworkContext'
-import { WalletContext } from '../contexts/WalletContext'
 import { usePriceHistory } from '../hooks/useCoingeckoAPI'
 import { useKoyweMintEvents, usePledgeEvents, useTokenTransaction } from '../hooks/usePolyscanAPI'
 import sushiTokenList from '../sushiTL.json'
@@ -42,8 +40,10 @@ const Metrics = () => {
 
   const priceHistory = []
   const indexTransactions = []
-  const [indexPriceHistory,setIndexPriceHistory] = useState()
   const [chartData, setChartData] = useState()
+  const [totalTonsPledged, setTotalTonsPledged] = useState()
+  const [pledgeChartData, setPledgeChartData] = useState()
+  const [nftAddresses,setNftAddresses] = useState()
 
   const pledgePSEvents = usePledgeEvents()
   const mintPSEvents = useKoyweMintEvents()
@@ -61,7 +61,7 @@ const Metrics = () => {
       },
       title: {
         display: false,
-        text: 'Price Over Time',
+        text: 'Last 30 Day Data',
       },
     },
   }
@@ -71,16 +71,79 @@ const Metrics = () => {
   priceHistory[dfiAddress] = usePriceHistory(dfiAddress,30,'daily')
   priceHistory[nctAddress] = usePriceHistory(nctAddress,30,'daily')
 
+  const dates = priceHistory[nctAddress] && priceHistory[nctAddress].prices.reverse().map(entry => {
+    return (new Date(entry[0]).toISOString().split('T')[0])
+  })
+
+
   indexTransactions.CBTC = useTokenTransaction('0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',30)
   indexTransactions.CNBED = useTokenTransaction('0x0765425b334d7db1f374d03f4261ac191172bef7',30)
 
   useEffect(() => {
-    const prepareChartData = async () => {
+    const preparePledgeData = () => {
+      let _totalTons = 0
+
+      if (pledgePSEvents) {
+        const oldestTimeStamp = Math.round((new Date()). getTime() / 1000) - 30 * 24 * 60 * 60
+        const filteredEvents = pledgePSEvents
+        .filter(event => {
+          _totalTons += event.tonsCommitted*1
+
+          return event.timestampPledge >= oldestTimeStamp
+        })
+
+        const pledgeDates = filteredEvents.map(event => {
+          return new Date(event.timestampPledge*1000).toISOString().split('T')[0]
+        })
+
+        const newChartData = {
+          labels: dates,
+          datasets: [
+            {
+              label: 'Number of Pledges',
+              data: dates.map(date => {
+                let events = 0
+
+                pledgeDates.forEach(event => {
+                  return event === date ? events+=1 : events
+                })
+
+                return events
+              }),
+              borderColor: '#f5a442',
+              backgroundColor: '#f5a442',
+            },
+          ],
+        }
+
+        setPledgeChartData(newChartData)
+        setTotalTonsPledged(_totalTons)
+      }
+    }
+
+    preparePledgeData()
+  },[pledgePSEvents])
+
+  useEffect(() => {
+    const prepareTreeData = () => {
+      if(mintPSEvents) {
+        const _uniqueAddresses = []
+
+        mintPSEvents.forEach(event => {
+          _uniqueAddresses[event.minter] ? _uniqueAddresses[event.minter] +=1 : _uniqueAddresses[event.minter] = 1
+        })
+
+        setNftAddresses(Object.keys(_uniqueAddresses).length)
+      }
+    }
+
+    prepareTreeData()
+  },[mintPSEvents])
+
+  useEffect(() => {
+    const prepareChartData = () => {
       const _indexPriceHistory = []
       const _indexTransactions = []
-      const dates = priceHistory[nctAddress] && priceHistory[nctAddress].prices.reverse().map(entry => {
-        return (new Date(entry[0]).toISOString().split('T')[0])
-      })
 
       if(indexContextDetails && priceHistory[nctAddress]  && priceHistory[wethAddress] && priceHistory[wbtcAddress] && priceHistory[dfiAddress])
         indexContextDetails.forEach(index => {
@@ -118,7 +181,6 @@ const Metrics = () => {
         }
 
         setChartData(newChartData)
-        setIndexPriceHistory(_indexPriceHistory)
     }
 
     prepareChartData()
@@ -133,8 +195,8 @@ const Metrics = () => {
             <TypoTitle level={2}>Key Metrics</TypoTitle>
           </Col>
           <Col>
-            <TypoTitle level={3}>{pledgePSEvents && pledgePSEvents.length || 0} Koywe Pledges</TypoTitle>
-            <TypoTitle level={3}>{mintPSEvents && mintPSEvents.length || 0} Koywe Trees Minted</TypoTitle>
+            <TypoTitle level={3}>{pledgePSEvents && pledgePSEvents.length || 0} Koywe Pledges, {totalTonsPledged || 0} tons committed</TypoTitle>
+            <TypoTitle level={3}>{mintPSEvents && mintPSEvents.length || 0}/255 Koywe Trees Minted by {nftAddresses || 0} unique addresses</TypoTitle>
           </Col>
         </Row>
         <Row justify="center" className="mb-md">
@@ -153,11 +215,10 @@ const Metrics = () => {
                     style={{ width: '100%', textAlign: 'left' }}
                     extra={`Fee: ${utils.formatUnits(item.streamingFeePercentage,18)*100}%`}
                   >
+                    <TypoTitle level={4}>Market Cap: ${(utils.formatUnits(item.totalSupply,18) * indexUSDPrices[item.symbol]).toFixed(2)}</TypoTitle>
                     Total Supply: {(utils.formatUnits(item.totalSupply,18)*1).toFixed(2)}
                     <br />
                     Current Price: ${(indexUSDPrices[item.symbol]*1).toFixed(2)}
-                    <br />
-                    <b>Market Cap: ${(utils.formatUnits(item.totalSupply,18) * indexUSDPrices[item.symbol]).toFixed(2)}</b>
                     <br />
                     Unaccrued Fees: ${(utils.formatUnits(item.unaccruedFees,18) * indexUSDPrices[item.symbol]).toFixed(2)}
                     {indexTransactions[item.symbol]  && <List
@@ -189,6 +250,10 @@ const Metrics = () => {
         <Row justify="center" className="mb-md">
           <TypoTitle level={3}>Index Prices (last 30 days)</TypoTitle>
           {chartData ? <Line data={chartData} options={options}/> : '' }
+        </Row>
+        <Row justify="center" className="mb-md">
+          <TypoTitle level={3}>Pledges per day (last 30 days)</TypoTitle>
+          {pledgeChartData ? <Line data={pledgeChartData} options={options}/> : '' }
         </Row>
       </>
       }
