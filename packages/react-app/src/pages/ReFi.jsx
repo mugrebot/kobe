@@ -5,6 +5,7 @@ import { useGasPrice } from 'eth-hooks'
 
 import ConnectButton from '../components/common/ConnectButton'
 import BuySetModal from '../components/RegenDefi/BuySetModal'
+import SwapModal from '../components/RegenDefi/SwapModal'
 import MyRegenPositionsFull from '../components/RegenDefi/MyRegenPositionsFull'
 import SimpleRamp from '../components/RegenDefi/SimpleRamp'
 import { IndexContext } from '../contexts/IndexContext'
@@ -79,7 +80,7 @@ const ReFi = () => {
   return (
     <Row justify="center" className="mb-md">
       {!isLoadingAccount && address && writeContracts && contracts &&
-      <BuySetModal
+      <SwapModal
         set={setObject}
         setDetails={currentSet}
         writeContracts={writeContracts}
