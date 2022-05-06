@@ -32,9 +32,9 @@ const Wallet = () => {
     location.push(url)
   }
 
-  const isStaging = useMemo(() => {
-    return window.location.hostname.includes('staging')
-  }, [])
+  // const isStaging = useMemo(() => {
+  //   return window.location.hostname.includes('staging')
+  // }, [])
 
   const [dataWallet, setDataWallet] = useState()
   const [dataIrl, setDataIrl] = useState(null)
@@ -112,7 +112,8 @@ const Wallet = () => {
                         <Image src={'/icon/world.svg'} preview={false} />
                       </Row>
                     </Col>
-                    <StyledButton $type="primary" onClick={() => handleMenu('/calculator')} block disabled={!isStaging}>
+                    {/* <StyledButton $type="primary" onClick={() => handleMenu('/calculator')} block disabled={!isStaging}> */}
+                    <StyledButton $type="primary" onClick={() => handleMenu('/calculator')} block >
                       Start calculator (coming soon)
                     </StyledButton>
                   </Row>
