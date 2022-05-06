@@ -15,7 +15,7 @@ import { MiddleLayout } from './layouts/content/MiddleLayout'
 import { RightLayout } from './layouts/content/RightLayout'
 
 export const Diet = ({ nextStep, backStep }) => {
-  const { advanced, accessToken, setGraphValues } = useContext(CalculatorContext)
+  const { advanced, accessToken, graphValues, setGraphValues } = useContext(CalculatorContext)
   const [loading, setLoading] = useState(false)
 
   const { formData, onChange } = useForm({})
@@ -50,10 +50,10 @@ export const Diet = ({ nextStep, backStep }) => {
       .then(async res => {
         const responseData = await res.json()
 
-        if (responseData.success)
-          // setGraphValues(prevState => ({ ...prevState, diet: 10 })) // reemplazar el valor por el de la api de 1 a 100
+        if (responseData.success) {
+          setGraphValues(prevState => ({ ...prevState, diet: 50 })) // reemplazar el valor por el de la api de 1 a 100
           nextStep()
-         else return Promise.reject(responseData.message)
+        } else return Promise.reject(responseData.message)
       })
       .catch(err => {
         console.log(err)
@@ -71,7 +71,7 @@ export const Diet = ({ nextStep, backStep }) => {
       />
       <ContentLayout>
         <LeftLayout>
-          <Stats />
+          <Stats graphValues={graphValues}/>
         </LeftLayout>
         <MiddleLayout>
           {!advanced && <DietForm formData={formData} onChange={onChange} />}

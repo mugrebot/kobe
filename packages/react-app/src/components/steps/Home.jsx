@@ -1,8 +1,11 @@
-import { useContext } from 'react'
-import { Col, Image, Input, Row, Select, Typography } from 'antd'
+/* eslint-disable max-lines-per-function */
+import { useContext, useEffect, useState } from 'react'
+import { Col, Image, Input, Row, Select, Tooltip,Typography } from 'antd'
 
 import { StyledButton } from '../../components/common/StyledButton'
+import { EmissionsPerCapitaCountries } from '../../constants.js'
 import CalculatorContext from '../../contexts/CalculatorContext'
+import { NetworkContext } from '../../contexts/NetworkContext'
 
 import { StyledCol } from './components/StyledCol'
 import { StyledRow } from './components/StyledRow'
@@ -12,7 +15,20 @@ const { Text, Title } = Typography
 const { Option } = Select
 
 export const Home = ({ nextStep }) => {
-  const { country, setCountry, email, setEmail, setGraphValues } = useContext(CalculatorContext)
+  const { country, setCountry, countryCode, setCountryCode, email, setEmail, graphValues, setGraphValues } = useContext(CalculatorContext)
+  const { address, isLoadingAccount } = useContext(NetworkContext)
+
+  const [countryList, setCountryList] = useState()
+
+  useEffect(() => {
+    const _countryList = []
+
+    setEmail(address || 'anon')
+
+    for(const country in EmissionsPerCapitaCountries)
+      _countryList.push(country)
+    setCountryList(_countryList)
+  }, [address, setEmail])
 
   return (
     <>
@@ -24,6 +40,10 @@ export const Home = ({ nextStep }) => {
       <StyledRow justify="center">
         <Col>
           <Text>
+            We know calculating exactly how much anyone is polluting is nigh impossible.
+            <br />
+            Still, knowing in orders of magnitude how much CO2e we put in the atmosphere help us create awareness.
+            <br />
             Answer this brief survey about your lifestyle and get to know your footprint. It will take you from 3 to 10
             minutes.
           </Text>
@@ -39,13 +59,15 @@ export const Home = ({ nextStep }) => {
           <StyledTitle level={3}>Contact information</StyledTitle>
         </StyledCol>
         <StyledCol>
-          <Image src="icon/alert-info.svg" preview={false} />
+          <Tooltip title="We will link your address to the results in our DB. Logout to answer anonymously">
+            <Image src="icon/alert-info.svg" preview={false} />
+          </Tooltip>
         </StyledCol>
       </StyledRow>
       <StyledRow justify="center">
         <Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
-          <Text>Email *</Text>
-          <Input placeholder="mail@mail.com" value={email} onChange={e => setEmail(e.target.value)} />
+          <Text>Address *</Text>
+          <Input placeholder="0x000" value={address || 'anon'} disabled/>
         </Col>
       </StyledRow>
       <StyledRow justify="center">
@@ -58,13 +80,22 @@ export const Home = ({ nextStep }) => {
           <Row>
             <Col span={24}>
               <Select
+                showSearch
                 placeholder="Choose your country"
+                optionFilterProp="children"
                 style={{ width: '100%' }}
                 value={country}
-                onChange={e => setCountry(e.target.value)}
+                onChange={value => {
+                  setCountryCode(value)
+                  setCountry(EmissionsPerCapitaCountries[value].Country)
+                }}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
               >
-                <Option value="Chile">Chile</Option>
-                <Option value="Argentina">Argentina</Option>
+                {EmissionsPerCapitaCountries && countryList && countryList.map(country => {
+                  return <Option key={country} value={country}>{EmissionsPerCapitaCountries[country].Country}</Option>
+                })}
               </Select>
             </Col>
           </Row>
@@ -76,7 +107,7 @@ export const Home = ({ nextStep }) => {
             $type="primary"
             style={{ width: '100%' }}
             onClick={() => {
-              // setGraphValues(prevState => ({ ...prevState, country: '6,5', total: '4,7' })) // reemplazar por el valor del pais
+              setGraphValues(prevState => ({ ...prevState, country: EmissionsPerCapitaCountries[countryCode].AnnualEmissions || '4.47', total: EmissionsPerCapitaCountries[countryCode].AnnualEmissions || '4.47', countryCode })) // reemplazar por el valor del pais
               nextStep()
             }}
           >

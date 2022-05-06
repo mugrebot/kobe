@@ -70,15 +70,15 @@ const EmailSection = ({ email }) => {
             flexDirection: 'column',
           }}>
           <Col xl={10} md={24}>
-            <Title style={{ color: '#25855A' }}>¡Felicitaciones!</Title>
+            <Title style={{ color: '#25855A' }}>Congratulations! The End!</Title>
           </Col>
           <Col xl={10} md={24} style={{ marginBottom: '4rem' }}>
             <Text style={{ fontSize: '24px', lineHeight: '32px' }}>
-              ¡Al medir tus emisiones estás dando el primer paso!
+              The first step to doing something is being aware of our impact!
             </Text>
           </Col>
           <Col xl={10} md={24} style={{ marginBottom: '1rem' }}>
-            <Text>Tus emisiones están siendo calculadas</Text>
+            <Text>We&apos;ve calculated your emissions</Text>
           </Col>
           <Col xl={10} md={24} style={{ marginBottom: '3rem' }}>
             <Row justify="space-around">
@@ -98,10 +98,10 @@ const EmailSection = ({ email }) => {
             </Row>
           </Col>
           <Col xl={10} md={24}>
-            <Text>Tus emisiones están siendo calculadas</Text>
+            <Text>If you want, we can also send them to your email (leave blank if not)</Text>
           </Col>
           <Col xl={10} md={24}>
-            <Input value={email} placeholder="mail@yourmail.com" />
+            <Input value={email} placeholder="email@youremail.com" />
           </Col>
           <Col xl={10} md={24}>
             <StyledButton
@@ -109,7 +109,7 @@ const EmailSection = ({ email }) => {
               disabled={loading}
               style={{ paddingInline: '2.2rem', float: 'right' }}
               onClick={() => handleGoToEmission('emission')}>
-              Ver mis emisiones
+              Just tell me how much!
             </StyledButton>
           </Col>
         </Row>

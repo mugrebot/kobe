@@ -61,7 +61,7 @@ const Wallet = () => {
             { id: 1, quantity: parseFloat(irlStoredData.Home_Emissions || 0).toFixed(2), type: 'house' },
             { id: 2, quantity: parseFloat(irlStoredData.Transportation_Emissions || 0).toFixed(2), type: 'car' },
             { id: 3, quantity: parseFloat(irlStoredData.Diet_Emissions || 0).toFixed(2), type: 'burger' },
-            { id: 4, quantity: parseFloat(irlStoredData.Goods_Emissions || 0).toFixed(2), type: 'house' },
+            { id: 4, quantity: parseFloat(irlStoredData.Goods_Emissions || 0).toFixed(2), type: 'cell' },
             { id: 5, quantity: parseFloat(irlStoredData.Services_Emissions || 0).toFixed(2), type: 'work' },
           ],
         },
