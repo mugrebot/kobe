@@ -15,23 +15,23 @@ import { MiddleLayout } from './layouts/content/MiddleLayout'
 import { RightLayout } from './layouts/content/RightLayout'
 
 const Expense = ({ nextStep, backStep }) => {
-  const { advanced, accessToken, setGraphValues } = useContext(CalculatorContext)
+  const { advanced, accessToken, graphValues, setGraphValues } = useContext(CalculatorContext)
   const [loading, setLoading] = useState(false)
 
   const { formData, onChange } = useForm({})
 
   const handleNext = () => {
     const data = {
-      ...(!advanced && { spend_on_services_per_month: formData?.spendOnServicesPerMonth }),
+      ...(!advanced && { spend_on_services_per_month: (formData?.spendOnServicesPerMonth*780) }),
       ...(advanced && {
-        health: formData?.health,
-        information_telecommunications: formData?.information,
-        visits_doctor: formData?.doctor,
-        auto_technical_service: formData?.autoService,
-        financial_management_services: formData?.financialServices,
-        home_maintenance_repairs: formData?.homeMaintenance,
-        donations: formData?.donations,
-        other_services: formData?.otherServices,
+        health: formData?.health*780,
+        information_telecommunications: formData?.information*780,
+        visits_doctor: formData?.doctor*780,
+        auto_technical_service: formData?.autoService*780,
+        financial_management_services: formData?.financialServices*780,
+        home_maintenance_repairs: formData?.homeMaintenance*780,
+        donations: formData?.donations*780,
+        other_services: formData?.otherServices*780,
       }),
       bearerToken: accessToken,
     }
@@ -48,10 +48,10 @@ const Expense = ({ nextStep, backStep }) => {
       .then(async res => {
         const responseData = await res.json()
 
-        if (responseData.success)
-          // setGraphValues(prevState => ({ ...prevState, expense: 10 })) // reemplazar el valor por el de la api de 1 a 100
+        if (responseData.success) {
+          setGraphValues(prevState => ({ ...prevState, expense: 10 })) // reemplazar el valor por el de la api de 1 a 100
           nextStep()
-        else return Promise.reject(responseData.message)
+        } else return Promise.reject(responseData.message)
       })
       .catch(err => {
         console.log(err)
@@ -69,7 +69,7 @@ const Expense = ({ nextStep, backStep }) => {
       />
       <ContentLayout>
         <LeftLayout>
-          <Stats />
+          <Stats graphValues={graphValues} />
         </LeftLayout>
         <MiddleLayout>
           {!advanced && <ExpenseForm formData={formData} onChange={onChange} />}

@@ -32,9 +32,9 @@ const Wallet = () => {
     location.push(url)
   }
 
-  const isStaging = useMemo(() => {
-    return window.location.hostname.includes('staging')
-  }, [])
+  // const isStaging = useMemo(() => {
+  //   return window.location.hostname.includes('staging')
+  // }, [])
 
   const [dataWallet, setDataWallet] = useState()
   const [dataIrl, setDataIrl] = useState(null)
@@ -61,7 +61,7 @@ const Wallet = () => {
             { id: 1, quantity: parseFloat(irlStoredData.Home_Emissions || 0).toFixed(2), type: 'house' },
             { id: 2, quantity: parseFloat(irlStoredData.Transportation_Emissions || 0).toFixed(2), type: 'car' },
             { id: 3, quantity: parseFloat(irlStoredData.Diet_Emissions || 0).toFixed(2), type: 'burger' },
-            { id: 4, quantity: parseFloat(irlStoredData.Goods_Emissions || 0).toFixed(2), type: 'house' },
+            { id: 4, quantity: parseFloat(irlStoredData.Goods_Emissions || 0).toFixed(2), type: 'cell' },
             { id: 5, quantity: parseFloat(irlStoredData.Services_Emissions || 0).toFixed(2), type: 'work' },
           ],
         },
@@ -98,7 +98,6 @@ const Wallet = () => {
               )}
               {isLoadingAccount && !address && <ConnectButton />}
             </Col>
-            {!irlStoredData && <Col md={9}></Col>}
             {!irlStoredData && (
               <Col xs={{ span: 24 }} md={{ span: 11 }} style={{ marginTop: '20px' }}>
                 <Card title="IRL emissions" className="card-info">
@@ -112,8 +111,9 @@ const Wallet = () => {
                         <Image src={'/icon/world.svg'} preview={false} />
                       </Row>
                     </Col>
-                    <StyledButton $type="primary" onClick={() => handleMenu('/calculator')} block disabled={!isStaging}>
-                      Start calculator (coming soon)
+                    {/* <StyledButton $type="primary" onClick={() => handleMenu('/calculator')} block disabled={!isStaging}> */}
+                    <StyledButton $type="primary" onClick={() => handleMenu('/calculator')} block >
+                      Start calculator
                     </StyledButton>
                   </Row>
                 </Card>
