@@ -98,7 +98,6 @@ const Wallet = () => {
               )}
               {isLoadingAccount && !address && <ConnectButton />}
             </Col>
-            {!irlStoredData && <Col md={9}></Col>}
             {!irlStoredData && (
               <Col xs={{ span: 24 }} md={{ span: 11 }} style={{ marginTop: '20px' }}>
                 <Card title="IRL emissions" className="card-info">
@@ -114,7 +113,7 @@ const Wallet = () => {
                     </Col>
                     {/* <StyledButton $type="primary" onClick={() => handleMenu('/calculator')} block disabled={!isStaging}> */}
                     <StyledButton $type="primary" onClick={() => handleMenu('/calculator')} block >
-                      Start calculator (coming soon)
+                      Start calculator
                     </StyledButton>
                   </Row>
                 </Card>
