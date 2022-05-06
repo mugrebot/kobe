@@ -25,6 +25,7 @@ const imageDict = data => {
     co2: '/icon/co2.svg',
     house: '/icon/emoji-house.svg',
     car: '/icon/emoji-car.svg',
+    cell: '/icon/cellphone-notebook.svg',
     burger: '/icon/emoji-hamburguer.svg',
     work: '/icon/emoji-work.svg',
   }
@@ -40,7 +41,8 @@ const textDict = (data, cardType) => {
     house: 'Home',
     car: 'Transport',
     burger: 'Diet',
-    work: 'Other',
+    cell: 'Goods',
+    work: 'Services',
   }
 
   return dict[data]

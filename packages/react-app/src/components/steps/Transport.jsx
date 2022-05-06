@@ -50,11 +50,11 @@ export const Transport = ({ nextStep, backStep }) => {
       .then(async res => {
         const responseData = await res.json()
 
-        if (responseData.success)
-          // setGraphValues(prevState => ({ ...prevState, transport: 10 })) // reemplazar el valor por el de la api de 1 a 100
+        if (responseData.success) {
+          setGraphValues(prevState => ({ ...prevState, transport: 50 })) // reemplazar el valor por el de la api de 1 a 100
 
           nextStep()
-        else return Promise.reject(responseData.message)
+        } else return Promise.reject(responseData.message)
       })
       .catch(err => {
         console.log(err)

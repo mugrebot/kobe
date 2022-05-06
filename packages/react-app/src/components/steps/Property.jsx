@@ -15,26 +15,28 @@ import { MiddleLayout } from './layouts/content/MiddleLayout'
 import { RightLayout } from './layouts/content/RightLayout'
 
 export const Property = ({ nextStep, backStep }) => {
-  const { advanced, accessToken, setGraphValues } = useContext(CalculatorContext)
+  const { advanced, accessToken, graphValues, setGraphValues } = useContext(CalculatorContext)
   const [loading, setLoading] = useState(false)
 
   const { formData, onChange } = useForm({})
 
   const handleNext = () => {
     const data = {
-      ...(!advanced && { monthly_spend_on_goods: formData?.monthlySpendOnGoods }),
+      ...(!advanced && { monthly_spend_on_goods: `${formData?.monthlySpendOnGoods*780}` }),
       ...(advanced && {
-        furniture_household_appliances: formData?.furnitureAppliances,
-        clothes: formData?.clothes,
-        entertainment: formData?.entertainment,
-        paper_office_reading: formData?.paperOffice,
-        personal_hygiene_cleaning: formData?.personalHygiene,
-        spare_parts_car: formData?.spareParts,
-        medical_supplies: formData?.medicalSupplies,
+        furniture_household_appliances: formData?.furnitureAppliances*780,
+        clothes: formData?.clothes*780,
+        entertainment: formData?.entertainment*780,
+        paper_office_reading: formData?.paperOffice*780,
+        personal_hygiene_cleaning: formData?.personalHygiene*780,
+        spare_parts_car: formData?.spareParts*780,
+        medical_supplies: formData?.medicalSupplies*780,
       }),
       services: advanced ? 'Detallada' : 'Simplificada',
       bearerToken: accessToken,
     }
+
+    console.log('data',data)
 
     setLoading(true)
 
@@ -48,10 +50,10 @@ export const Property = ({ nextStep, backStep }) => {
       .then(async res => {
         const responseData = await res.json()
 
-        if (responseData.success)
-          // setGraphValues(prevState => ({ ...prevState, property: 10 })) // reemplazar el valor por el de la api de 1 a 100
+        if (responseData.success) {
+          setGraphValues(prevState => ({ ...prevState, property: 50 })) // reemplazar el valor por el de la api de 1 a 100
           nextStep()
-        else return Promise.reject(responseData.message)
+        } else return Promise.reject(responseData.message)
       })
       .catch(err => {
         console.log(err)
@@ -69,7 +71,7 @@ export const Property = ({ nextStep, backStep }) => {
       />
       <ContentLayout>
         <LeftLayout>
-          <Stats />
+          <Stats graphValues={graphValues}/>
         </LeftLayout>
         <MiddleLayout>
           {!advanced && <PropertyForm formData={formData} onChange={onChange} />}
