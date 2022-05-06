@@ -11,7 +11,7 @@ import { StyledTitle } from './components/StyledTitle'
 const { Text, Title } = Typography
 
 export const Ready = ({ nextStep }) => {
-  const { country, countryCode, email, advanced, setToken, graphValues } = useContext(CalculatorContext)
+  const { country, email, advanced, setToken } = useContext(CalculatorContext)
   const [loading, setLoading] = useState(false)
 
   const handleOnClick = () => {
@@ -58,7 +58,7 @@ export const Ready = ({ nextStep }) => {
       </StyledRow>
       <Row justify="center" gutter={{ md: 16, lg: 16, xl: 32, xxl: 64 }}>
         <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }} xl={{ span: 8 }}>
-          <Stats graphValues={graphValues} />
+          <Stats />
         </Col>
         <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }} xl={{ span: 16 }} xxl={{ span: 12 }}>
           <StyledRow justify="center">
@@ -68,7 +68,7 @@ export const Ready = ({ nextStep }) => {
           </StyledRow>
           <StyledRow>
             <Col>
-              <StyledTitle level={4}>Your footprint is compared on the average of your home country</StyledTitle>
+              <StyledTitle level={4}>Your footprint is calculated based on the average of your country</StyledTitle>
             </Col>
           </StyledRow>
           <StyledRow>

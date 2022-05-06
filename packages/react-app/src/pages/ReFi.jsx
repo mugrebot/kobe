@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { Button, Col, Row, Space, Typography } from 'antd'
 import { useGasPrice } from 'eth-hooks'
+import Set from 'set.js'
 
 import ConnectButton from '../components/common/ConnectButton'
 import BuySetModal from '../components/RegenDefi/BuySetModal'
@@ -15,6 +16,20 @@ import { getFightData } from '../helpers/dashboardData'
 
 const { Title } = Typography
 
+const SetJsPolygonAddresses = {
+  controllerAddress: '0x75FBBDEAfE23a48c0736B2731b956b7a03aDcfB2',
+  setTokenCreatorAddress: '0x14f0321be5e581abF9d5BC76260bf015Dc04C53d',
+  basicIssuanceModuleAddress: '0x38E5462BBE6A72F79606c1A0007468aA4334A92b',
+  debtIssuanceModuleV2Address: '0xf2dC2f456b98Af9A6bEEa072AF152a7b0EaA40C9',
+  streamingFeeModuleAddress: '0x8440f6a2c42118bed0D6E6A89Bf170ffd13e21c0',
+  tradeModuleAddress: '0xd04AabadEd11e92Fefcd92eEdbBC81b184CdAc82',
+  protocolViewerAddress: '0x8D5CF870354ffFaE0586B639da6D4E4F6C659c69',
+  integrationRegistryAddress: '0x4c4C649455c6433dC48ff1571C9e50aC58f0CeFA',
+  priceOracleAddress: '0x9378Ad514c00E4869656eE27b634d852DD48feAD',
+  setValuerAddress: '0x3700414Bb6716FcD8B14344fb10DDd91FdEA59eC',
+}
+
+
 const ReFi = () => {
   ReactGA.initialize('G-L9J2W0LSQS')
   ReactGA.send('pageview')
@@ -26,21 +41,10 @@ const ReFi = () => {
 
   const [balance,setBalance] = useState(0)
   const [currentSet,setCurrentSet] = useState(null)
-  const [gasSet,setGasSet] = useState()
   const [modalUp, setModalUp] = useState(false)
 
-  const tx = gasSet && Transactor(userSigner, gasSet)
-
-  useEffect(() => {
-    const getGas = async () => {
-      const gas = setObject && await setObject.utils.fetchGasPriceAsync('fastest')
-
-      setGasSet(gas)
-    }
-
-    getGas()
-
-  }, [setObject])
+  const gasPrice = useGasPrice(targetNetwork, 'fastest')
+  const tx = Transactor(userSigner, gasPrice)
 
   const handleModalUp = symbol => {
     setModalUp(true)
@@ -88,7 +92,7 @@ const ReFi = () => {
         modalUp={modalUp}
         handleModalDown={handleModalDown}
         address={address}
-        gasPrice={gasSet}
+        gasPrice={gasPrice}
         USDPrices={USDPrices}
         wethBalance={polygonWethBalance}
       />}

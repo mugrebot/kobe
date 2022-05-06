@@ -20,12 +20,12 @@ export const SectionButtons = ({
         <Row justify="space-between">
           <Col span={10}>
             <StyledButton $type="gray" block onClick={() => backStep()} disabled={loading}>
-              Back
+              Volver
             </StyledButton>
           </Col>
           <Col span={10}>
             <StyledButton $type="primary" block onClick={() => nextStep()} disabled={loading}>
-              Next
+              Siguiente
             </StyledButton>
           </Col>
         </Row>

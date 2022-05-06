@@ -86,19 +86,18 @@ export const Stats = ({ graphValues }) => {
     <StyledBody>
       <Row justify="space-between" align="middle">
         <Col>
-          <Title level={2} >{graphValues?.countryCode || 'World'}</Title>
-          <Text>average</Text>
+          <Image src="icon/chile.svg" preview={false} />
         </Col>
         <Col xs={{ span: 12 }} sm={{ span: 8 }} md={{ span: 12 }}>
           <Row align="middle" justify="center">
             <Col>
-              <Title level={2}>{graphValues?.country || '4.7'}</Title>
+              <Title level={2}>{graphValues?.country || '6,5'}</Title>
             </Col>
           </Row>
           <Row align="middle" justify="center">
             <Col style={{ textAlign: 'center' }}>
-              <Text style={{ marginRight: 4 }}>CO2 ton/year per person</Text>
-              {/* <Image src="icon/alert-info.svg" height={14} preview={false} /> */}
+              <Text style={{ marginRight: 4 }}>times the planetary boundaries</Text>
+              <Image src="icon/alert-info.svg" height={14} preview={false} />
             </Col>
           </Row>
         </Col>
@@ -110,12 +109,12 @@ export const Stats = ({ graphValues }) => {
         <Col xs={{ span: 12 }} sm={{ span: 8 }} md={{ span: 12 }}>
           <Row align="middle" justify="center">
             <Col>
-              <Title level={3}>{graphValues?.total || '4.7'}</Title>
+              <Title level={3}>{graphValues?.total || '4,7'}</Title>
             </Col>
           </Row>
           <Row align="middle" justify="center">
             <Col>
-              <Text>CO2 ton/year</Text>
+              <Text>Ton Co2e/year</Text>
             </Col>
           </Row>
         </Col>

@@ -29,7 +29,7 @@ const Pledge = () => {
           ownership of a part of the effort. It doesn&apos;t need to be exact, but it does need to come from your heart.
           There are 60 million CO2e tons emitted every year. <br />
           We ask you to make a commitment, just like our nation&apos;s leaders have, to offset/reduce your annual CO2
-          footprint. Now the important part....your pledge
+          footprint. Now the important....your pledge
         </Paragraph>
       </Col>
       <Col xl={13} xs={22}>

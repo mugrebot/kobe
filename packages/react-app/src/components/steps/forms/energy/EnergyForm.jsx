@@ -45,7 +45,7 @@ export const EnergyForm = ({ formData, onChange }) => {
         <InputLayout
           label="How much electricity do you consume per month?"
           tooltip
-          tooltipText="You can get this value from your electricity bill"
+          tooltipText="You can check on your electricity bill"
         >
           <InputNumber
             min={0}
@@ -59,7 +59,7 @@ export const EnergyForm = ({ formData, onChange }) => {
       </RowLayout>
       <StyledDivider />
       <RowLayout align="middle" icon="icon/gas.svg" title="Gas">
-        <InputLayout label="How much liquid gas do you consume per month?" tooltip tooltipText="">
+        <InputLayout label="How much liquefied gas do you consume per month?" tooltip tooltipText="">
           <InputNumber
             min={0}
             placeholder="15 kgs"

@@ -20,7 +20,7 @@ const StyledCard = styled(Card)`
 `
 
 const CardEmission = ({ value, context, onClick, color1, color2, color3, background, isWritable = false }) => {
-  const [co2, setCo2] = useState(4.47)
+  const [co2, setCo2] = useState(15)
 
   useEffect(() => {
     if (!isWritable) setCo2(Number(value))

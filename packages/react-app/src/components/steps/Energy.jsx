@@ -50,10 +50,10 @@ export const Energy = ({ nextStep, backStep }) => {
       .then(async res => {
         const responseData = await res.json()
 
-        if (responseData.success) {
-          setGraphValues(prevState => ({ ...prevState, energy: 50 })) // reemplazar el valor por el de la api de 1 a 100
+        if (responseData.success)
+          // setGraphValues(prevState => ({ ...prevState, energy: 10 })) // reemplazar el valor por el de la api de 1 a 100
           nextStep()
-        } else return Promise.reject(responseData.message)
+        else return Promise.reject(responseData.message)
       })
       .catch(err => {
         console.log(err)
@@ -67,7 +67,7 @@ export const Energy = ({ nextStep, backStep }) => {
     <>
       <Header
         title="Section N° 2 - Energy"
-        subtitle="Your emissions will depend on the number of people you live with. Answer with the total data for your household and we will divide those emissions by the number of people you live with."
+        subtitle="            Your emissions will depend on the number of people you live with. Answer with the total data for your household and we will divide those emissions by the number of people you live with."
       />
       <ContentLayout>
         <LeftLayout>
