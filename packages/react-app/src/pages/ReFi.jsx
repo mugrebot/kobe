@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-lines-per-function */
 import React, { useContext, useEffect, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { Button, Col, Row, Space, Typography } from 'antd'
@@ -5,14 +7,15 @@ import { useGasPrice } from 'eth-hooks'
 
 import ConnectButton from '../components/common/ConnectButton'
 import BuySetModal from '../components/RegenDefi/BuySetModal'
-import SwapModal from '../components/RegenDefi/SwapModal'
 import MyRegenPositionsFull from '../components/RegenDefi/MyRegenPositionsFull'
 import SimpleRamp from '../components/RegenDefi/SimpleRamp'
+import SwapModal from '../components/RegenDefi/SwapModal'
 import { IndexContext } from '../contexts/IndexContext'
 import { NetworkContext } from '../contexts/NetworkContext'
 import { WalletContext } from '../contexts/WalletContext'
 import { Transactor } from '../helpers'
 import { getFightData } from '../helpers/dashboardData'
+
 
 const { Title } = Typography
 
@@ -21,7 +24,7 @@ const ReFi = () => {
   ReactGA.send('pageview')
 
   const { contracts, USDPrices, walletBalance, isPledged, isLoadingBalances, writeContracts } = useContext(WalletContext)
-  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance, polygonWethBalance  } = walletBalance
+  const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance, polygonWethBalance, polygonContracts  } = walletBalance
   const { address, isLoadingAccount, targetNetwork, userSigner } = useContext(NetworkContext)
   const { setObject, indexContextDetails, indexUSDPrices } = useContext(IndexContext)
 
@@ -31,6 +34,7 @@ const ReFi = () => {
   const [modalUp, setModalUp] = useState(false)
 
   const tx = gasSet && Transactor(userSigner, gasSet)
+
 
   useEffect(() => {
     const getGas = async () => {
@@ -46,16 +50,32 @@ const ReFi = () => {
   const handleModalUp = symbol => {
     setModalUp(true)
 
+    if (indexContextDetails.find(set => {
+      return set.symbol === symbol
+    })) {
     const _currentSet = indexContextDetails.find(set => {
       return set.symbol === symbol
     })
 
     setCurrentSet(_currentSet)
+
+    console.log('this is the current set', currentSet)
+
+  } else {
+    const _currentSet = [symbol]
+
+    setCurrentSet(_currentSet)
+
+    console.log('this is the current token', currentSet)
+
   }
+}
 
   const handleModalDown = () => {
     setModalUp(false)
+    console.log('this is the current token', currentSet)
     setCurrentSet(null)
+
   }
 
   useEffect(() => {
@@ -92,7 +112,8 @@ const ReFi = () => {
         gasPrice={gasSet}
         USDPrices={USDPrices}
         wethBalance={polygonWethBalance}
-      />}
+      />
+      }
       <Col span={24} style={{ textAlign:'center' }} >
         <Title level={2}>Total Portfolio Value: {balance} USD</Title>
       </Col>

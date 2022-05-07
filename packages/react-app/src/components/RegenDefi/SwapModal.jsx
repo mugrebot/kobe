@@ -1,11 +1,13 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Button, Card, Image, Input, Modal, Row, Table, Tooltip } from 'antd'
 import { useContractReader, useUserProviderAndSigner } from 'eth-hooks'
 import { parseBytes32String } from 'ethers/lib/utils'
 import styled from 'styled-components'
+
+import { IndexContext } from '../../contexts/IndexContext'
 
 
 const Web3 = require('web3')
@@ -27,8 +29,10 @@ const ZERO_EX_ADDRESS = '0xdef1c0ded9bec7f1a1670819833240f027b25eff'
 
 
 
+
+
 // TODO: Add prices to preview. Add option to get new quotes from 0x after some time has gone or do it automatically
-export default function SwapSetModal({ writeContracts, contracts, tx, modalUp, handleModalDown, setDetails, address, set, gasPrice, USDPrices, wethBalance }) {
+export default function SwapModal({ writeContracts, contracts, tx, modalUp, handleModalDown, symbol, address, set, gasPrice, USDPrices, wethBalance, handleModalUp, setDetails }) {
   const tokenTexts = {
     'MCO2' : {
       address: '0xAa7DbD1598251f856C12f63557A4C4397c253Cea',
@@ -36,11 +40,23 @@ export default function SwapSetModal({ writeContracts, contracts, tx, modalUp, h
       description: 'Moss Certified CO2 Token. Each token represents the offset of 1 CO2e ton.',
       tokensetsURL: 'https://moss.earth',
     },
-    'CBTC' : {
-      address: '0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',
-      symbol: 'CBTC',
-      description: 'Clean Bitcoin lets you invest in the greatest store of value of our time, net-zero! The 1% of NCT tokens assures, at current prices, 38 years of green BTC hodling.',
-      tokensetsURL: 'https://www.tokensets.com/v2/set/polygon/0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',
+    'BCT' : {
+      address: '0x2F800Db0fdb5223b3C3f354886d907A671414A7F',
+      symbol: 'BCT',
+      description: 'Base Carbon Ton: Toucan credits bridged to blockchain on Polygon. Each token represents the offset of 1 CO2e ton.',
+      tokensetsURL: 'https://toucan.earth',
+    },
+    'NCT' : {
+      address: '0xD838290e877E0188a4A44700463419ED96c16107',
+      symbol: 'NCT',
+      description: 'Nature Carbon Ton: Toucan premium credits bridged to blockchain on Polygon. Each token represents the offset of 1 CO2e ton.',
+      tokensetsURL: 'https://toucan.earth',
+    },
+    'KLIMA' : {
+      address: '0x4e78011Ce80ee02d2c3e649Fb657E45898257815',
+      symbol: 'KLIMA',
+      description: 'Klima DAO Tokens, unstaked on Polygon.',
+      tokensetsURL: 'https://www.klimadao.finance',
     },
   }
 
@@ -85,6 +101,11 @@ export default function SwapSetModal({ writeContracts, contracts, tx, modalUp, h
   const [buyWethAmount, setBuyWethAmount] = useState()
   const [isWethApproved, setIsWethApproved] = useState()
   const [_response, setResponse] = useState()
+  const [params, setParams] = useState()
+
+  const { setObject, indexContextDetails, indexUSDPrices } = useContext(IndexContext)
+
+
 
   const issuerAddress = ZERO_EX_ADDRESS
   const issuerApproval = useContractReader(contracts, 'WETH', 'allowance', [address, issuerAddress])
@@ -98,42 +119,6 @@ export default function SwapSetModal({ writeContracts, contracts, tx, modalUp, h
   }
 
   const tokenDetails0x = []
-
-  //   if(setDetails && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
-         useEffect(() => {
-             const getTokenData = async () => {
-               const response = await fetch(
-                `https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(params)}`,
-               )
-               const tokdata = await response.json()
-
-               setResponse(tokdata)
-
-               console.log(tokenTexts.MCO2.address)
-               console.log(`https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(params)}`)
-
-
-                tokenDetails0x.push ({
-                    data: tokdata.data,
-                    priceofEth: tokdata.price,
-                    tokTo: tokdata.to,
-                    value: tokdata.value,
-                    gas: tokdata.gas,
-                    _gasprice: tokdata.gasPrice,
-
-                })
-
-
-
-
-
-                console.log(tokdata)
-                console.log(tokenDetails0x)
-
-             }
-
-             getTokenData()
-           }, [])
 
   const handleWETHQuotes = async _indexAmount => {
     setQuoting(true)
@@ -169,16 +154,104 @@ if(tokenDetails0x && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
     setQuoting(false)
   }
 
-  const params = {
 
-    buyToken: `${tokenTexts.MCO2.address}`,
-    sellToken: `0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619`,
-    sellAmount: `${indexAmount * 10**18}`,
-    slippagePercentage: '0.03',
-    feeRecipient: '0x4218A70C7197CA24e171d5aB71Add06a48185f6a',
-    buyTokenPercentageFee: '0.02',
 
+  useEffect(() => {
+    const getParams = async () => {
+
+console.log('outside', setDetails)
+
+    if (setDetails) {
+      console.log('inside', setDetails)
+
+      const _params = {
+
+        buyToken: tokenTexts[setDetails]?.address,
+        sellToken: `WETH`,
+        sellAmount: `${indexAmount * 10**18}`,
+        slippagePercentage: '0.03',
+        feeRecipient: '0x4218A70C7197CA24e171d5aB71Add06a48185f6a',
+        buyTokenPercentageFee: '0.02',
+
+      }
+
+      setParams(_params)
+    }
   }
+
+  getParams()
+}, [setDetails])
+
+
+  //   if(setDetails && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
+         useEffect(() => {
+             const getTokenData = async () => {
+               const response = await fetch(
+                `https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(params)}`,
+               )
+               const tokdata = await response.json()
+
+               setResponse(tokdata)
+
+               // eslint-disable-next-line dot-notation
+               console.log(`https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(params)}`)
+
+
+                tokenDetails0x.push ({
+                    data: tokdata.data,
+                    priceofEth: tokdata.price,
+                    tokTo: tokdata.to,
+                    value: tokdata.value,
+                    gas: tokdata.gas,
+                    _gasprice: tokdata.gasPrice,
+
+                })
+
+
+
+
+
+                console.log(tokdata)
+                console.log(tokenDetails0x)
+
+
+             }
+
+             getTokenData()
+           }, [])
+
+
+
+           useEffect(() => {
+            const getSetDetails = async () => {
+              if(setDetails) {
+                const tokens = setDetails.map(token => {
+                  const _token = sushiTokenList.find(sushiToken => {
+
+
+                    return sushiToken.address === tokenTexts[token].address
+                  })
+
+                  console.log(_token.logoURI)
+
+                  return {
+                    key: tokenTexts[token].address,
+                    logoURI: _token.logoURI,
+                    position: 1,
+                    name: _token.name,
+                    value: USDPrices[_token.coingeckoId].usd,
+                  }
+                })
+
+                setSetPositions(tokens)
+                console.log(tokens)
+              }
+            }
+
+            getSetDetails()
+
+          }, [setDetails])
+
 
 
 
@@ -189,7 +262,8 @@ if(tokenDetails0x && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
       const newTx = {
         from: address,
         to: ZERO_EX_ADDRESS,
-        data: _response.data,
+        data: await _response.data,
+        value: buyWethAmount && utils.parseEther(buyWethAmount),
       }
 
       console.log(newTx)
@@ -197,7 +271,6 @@ if(tokenDetails0x && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
       await tx(newTx)
       setBuying(false)
     }
-
 
 
 
@@ -210,7 +283,7 @@ if(tokenDetails0x && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
 
   return (
     <div>
-      <Modal title={`Buy ${tokenDetails0x.MCO2 && tokenDetails0x.MCO2.symbol}`}
+      <Modal title={0}
         visible={modalUp === true}
         onCancel={() => {
           handleModalDown()
@@ -232,24 +305,24 @@ if(tokenDetails0x && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
           </Button>,
         ]}>
           <Row justify="center" align="middle">
-            {tokenDetails0x.MCO2 && tokenDetails0x.MCO2.description}
+            {setDetails && tokenTexts[setDetails]?.description}
           </Row>
           <Row justify="center" align="middle">
             <Card
               size="small"
               type="inner"
-              title={`${tokenDetails0x.MCO2 && tokenDetails0x.MCO2.symbol} tokens to issue:`}
+              title={`${setDetails && tokenTexts[setDetails].symbol} tokens to issue:`}
               style={{ width: 400, textAlign: 'left' }}
             >
               <Input
                 style={{ textAlign: 'center' }}
-                placeholder={'shares of the index to issue'}
+                placeholder={'shares of the token to issue'}
                 value={indexAmount}
                 onChange={e => {
                   handleWETHQuotes(e.target.value)
                 }}
               />
-              <StyledTable columns={columns} dataSource={tokenDetails0x.MCO2} pagination={false} showHeader={false} />
+              <StyledTable columns={columns} dataSource={setPositions} pagination={false} showHeader={false} />
             </Card>
           </Row>
           <Row justify="center" align="middle">
@@ -283,7 +356,7 @@ if(tokenDetails0x && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
               Approve WETH
             </StyledButton>
             <StyledButton loading={buying} $type="primary" disabled={!isWethApproved || !buyWethAmount || wethFormated < buyWethAmount} onClick={handleIssuance}>
-              Issue Index Tokens
+              Issue Tokens
             </StyledButton>
           </Row>
       </Modal>

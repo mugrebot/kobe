@@ -61,6 +61,7 @@ export const WalletContextProvider = ({ children }) => {
   const entTreeBalance = useContractReader(contracts, 'ENT', 'balanceOf', [address])
   const yourETBalance = entTreeBalance && entTreeBalance.toNumber && entTreeBalance.toNumber()
 
+
   useEffect(() => {
     const getData = async () => {
       const response = await fetch(
@@ -72,6 +73,7 @@ export const WalletContextProvider = ({ children }) => {
     }
 
     getData()
+
   }, [])
 
   const value = {

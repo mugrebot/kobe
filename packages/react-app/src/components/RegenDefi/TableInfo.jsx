@@ -61,7 +61,7 @@ export const TableInfo = ({ data, handleModalUp }) => {
       title: 'Action',
       dataIndex: 'buy',
       key: 'buy',
-      render: props => handleModalUp && props.meta && props.meta === 'index' ?
+      render: props => handleModalUp && props.meta && props.meta === 'index'||'token' ?
       <StyledButton
         onClick={() => {
           handleModalUp(props.symbol)

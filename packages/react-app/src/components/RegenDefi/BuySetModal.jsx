@@ -18,7 +18,7 @@ const StyledTable = styled(Table)`
 `
 
 // TODO: Get new quotes from 0x after some time has gone by
-export default function BuySetModal({ writeContracts, contracts, tx, modalUp, handleModalDown, setDetails, address, set, gasPrice, USDPrices, wethBalance }) {
+export default function BuySetModal({ writeContracts, contracts, tx, modalUp, handleModalDown, setDetails, address, set, gasPrice, USDPrices, wethBalance, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED, CBTC }) {
   const tokenTexts = {
     'CNBED' : {
       address: '0x0765425b334d7db1f374d03f4261ac191172bef7',
@@ -79,6 +79,8 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
 
   const wethAddress = contracts?.WETH?.address
 
+
+
   const handleApproveTokens = async () => {
     setApproving(true)
     await tx(writeContracts.WETH.approve(issuerAddress, buyWethAmount && utils.parseEther(buyWethAmount)))
@@ -105,6 +107,7 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
 
       const quotes = await set.utils.batchFetchSwapQuoteAsync(_proportions,true,tokenTexts[setDetails.symbol].address,set.setToken,gasPrice)
 
+      console.log('this is the symbol', setDetails.symbol)
       setTradeQuotes(quotes.map(quote => {
         return quote.calldata
       }))
@@ -146,6 +149,8 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
             return sushiToken.address === token.component
           })
 
+          console.log(utils.formatUnits(token.unit, _token.decimals))
+
           return {
             key: token.component,
             logoURI: _token.logoURI,
@@ -156,10 +161,12 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
         })
 
         setSetPositions(tokens)
+        console.log(tokens)
       }
     }
 
     getSetDetails()
+
   }, [USDPrices, address, set, setDetails])
 
   useEffect(() => {
