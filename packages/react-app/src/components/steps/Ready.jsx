@@ -68,7 +68,7 @@ export const Ready = ({ nextStep }) => {
           </StyledRow>
           <StyledRow>
             <Col>
-              <StyledTitle level={4}>Your footprint is compared on the average of your home country</StyledTitle>
+              <StyledTitle level={4}>Your footprint is compared to the average of your home country</StyledTitle>
             </Col>
           </StyledRow>
           <StyledRow>
@@ -79,8 +79,7 @@ export const Ready = ({ nextStep }) => {
           <StyledRow>
             <Col>
               <Text>
-                You can choose to answer the simplified or the advance questions. The more details you provide, the more
-                precise your footprint can be determined.
+                The more details you provide, the more precisely your footprint will be calculated.
               </Text>
             </Col>
           </StyledRow>

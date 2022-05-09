@@ -24,7 +24,7 @@ export const TableInfo = ({ data, handleModalUp }) => {
             <Text>{tokenProp.title}</Text>
           </a>
           <a href={tokenProp.url} target="_blank">
-            <Image src={tokenProp.icon} preview={false} height={42} />
+            <Image src={tokenProp.icon} preview={false} height={42} width={42} />
           </a>
         </Row>
       ),

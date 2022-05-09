@@ -89,7 +89,7 @@ export const EnergyForm = ({ formData, onChange }) => {
         <InputLayout label="How much water do you consume per month?">
           <InputNumber
             min={0}
-            placeholder="12 lts"
+            placeholder="8000 lts"
             size="large"
             style={{ width: '100%' }}
             value={waterConsume}
