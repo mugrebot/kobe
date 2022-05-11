@@ -35,7 +35,6 @@ const ReFi = () => {
 
   const tx = gasSet && Transactor(userSigner, gasSet)
 
-
   useEffect(() => {
     const getGas = async () => {
       const gas = setObject && await setObject.utils.fetchGasPriceAsync('fastest')
@@ -58,49 +57,39 @@ const ReFi = () => {
     })
 
     setCurrentSet(_currentSet)
-
-
-
   } else {
     const _currentSet = symbol
 
     setCurrentSet(_currentSet)
-
-
-
   }
 }
 
-  const handleModalDown = () => {
-    setModalUp(false)
-    setCurrentSet(null)
+const handleModalDown = () => {
+  setModalUp(false)
+  setCurrentSet(null)
+}
 
+useEffect(() => {
+  const fightData = getFightData(
+    polygonBCTBalance,
+    polygonMCO2Balance,
+    polygonNCTBalance,
+    polygonKlimaBalance,
+    polygonSKlimaBalance,
+    0,
+    USDPrices,
+    polygonCNBEDBalance,
+    polygonCBTCBalance,
+    indexUSDPrices,
+    isPledged,
+  )
 
-  }
+  setBalance(fightData[2].quantity)
 
-  useEffect(() => {
-    const fightData = getFightData(
-      polygonBCTBalance,
-      polygonMCO2Balance,
-      polygonNCTBalance,
-      polygonKlimaBalance,
-      polygonSKlimaBalance,
-      0,
-      USDPrices,
-      polygonCNBEDBalance,
-      polygonCBTCBalance,
-      indexUSDPrices,
-      isPledged,
-    )
-
-    setBalance(fightData[2].quantity)
-
-  }, [isLoadingBalances])
+}, [isLoadingBalances])
 
 
 if (currentSet === 'MCO2' || currentSet === 'BCT' || currentSet === 'NCT' || currentSet === 'KLIMA')
-
-
   return (
     <Row justify="center" className="mb-md">
       {!isLoadingAccount && address && writeContracts && contracts &&
@@ -172,11 +161,6 @@ if (currentSet === 'MCO2' || currentSet === 'BCT' || currentSet === 'NCT' || cur
       </Col>
     </Row>
   )
-
-
 }
-
-
-
 
 export default ReFi
