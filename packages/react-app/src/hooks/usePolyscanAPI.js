@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { useEffect, useState } from 'react'
 
 const { utils, BigNumber } = require('ethers')
@@ -92,11 +93,60 @@ export const useKoyweMintEvents = () => {
   return events
 }
 
+export const useToucanMintEvents = address => {
+  const [events, setEvents] = useState()
+
+  useEffect(() => {
+    if(!address) return []
+
+    const urlEvents = `https://api.polygonscan.com/api?`
+    +`module=account&`
+    +`action=tokennfttx&`
+    +`fromBlock=1&`
+    +`contractaddress=0x5e377f16E4ec6001652befD737341a28889Af002&`
+    +`address=${address}&`
+    +`sort=desc&`
+    +`page=1&`
+    +`offset=10000&`
+    +`apikey=${PS_KEY}`
+
+    const getEvents = async () => {
+      try{
+        const response = await fetch(
+          urlEvents,
+        )
+        const data = await response.json()
+
+        if(data.message === 'OK') {
+          const processedEvents = data.result.map(event => {
+            return {
+              minter: address,
+              tokenID : event.tokenID,
+              block: event.timeStamp,
+            }
+          })
+
+          setEvents(processedEvents)
+        }
+
+      } catch(e) {
+        console.log(`Error getting Polygonscan Transactions. ${e}`)
+      }
+    }
+
+    getEvents()
+  }, [address])
+
+  return events
+}
+
 export const useTokenTransaction = (assetAddress, days=30) => {
   const [transactions, setTransactions] = useState()
   const oldestTimeStamp = Math.round((new Date()). getTime() / 1000) - (days || 30) * 24 * 60 * 60
 
   useEffect(() => {
+    if (!assetAddress) return []
+
     const getTransactions = async () => {
       const urlBlockN =
         `https://api.polygonscan.com/api?`
@@ -113,7 +163,7 @@ export const useTokenTransaction = (assetAddress, days=30) => {
         +`startblock=BLOCKNUMBER&`
         +`endblock=9999999999&`
         +`page=1&`
-        +`offset=100&`
+        +`offset=10000&`
         +`sort=asc&`
         +`apikey=${PS_KEY}`
 
@@ -149,4 +199,148 @@ export const useTokenTransaction = (assetAddress, days=30) => {
   }, [assetAddress, oldestTimeStamp])
 
   return transactions
+}
+
+export const useAccountTransactions = (address, days=30) => {
+  const [transactions, setTransactions] = useState()
+  const oldestTimeStamp = Math.round((new Date()). getTime() / 1000) - (days || 30) * 24 * 60 * 60
+
+  useEffect(() => {
+    if (!address) return []
+
+    const getTransactions = async () => {
+      const urlBlockN =
+        `https://api.polygonscan.com/api?`
+        +`module=block&`
+        +`action=getblocknobytime&`
+        +`timestamp=${oldestTimeStamp}&`
+        +`closest=before&`
+        +`apikey=${PS_KEY}`
+      const urlTxs =
+        `https://api.polygonscan.com/api?`
+        +`module=account&`
+        +`action=tokentx&`
+        +`address=${address}&`
+        +`startblock=BLOCKNUMBER&`
+        +`endblock=9999999999&`
+        +`page=1&`
+        +`offset=10000&`
+        +`sort=desc&`
+        +`apikey=${PS_KEY}`
+
+      let blockNumber = 1
+
+      try{
+        const response = await fetch(
+          urlBlockN,
+        )
+        const data = await response.json()
+
+        blockNumber = data.result
+
+      } catch(e) {
+        console.log(`Error getting oldest blocknumber. ${e}`)
+      }
+
+      try{
+        const response = await fetch(
+          urlTxs.replace('BLOCKNUMBER',blockNumber),
+        )
+        const data = await response.json()
+
+        if(data.message === 'OK') {
+          const filteredTransactions = data.result.filter(t => {
+            return t.tokenSymbol === 'BCT' ||
+              t.tokenSymbol === 'MCO2' ||
+              t.tokenSymbol === 'NCT' ||
+              t.tokenSymbol === 'KLIMA' ||
+              t.tokenSymbol === 'sKLIMA' ||
+              t.tokenSymbol === 'CBTC' ||
+              t.tokenSymbol === 'CNBED' // probably should change symbols for addresses, to prevent showing trash data
+          })
+
+          setTransactions(filteredTransactions)
+        }
+
+      } catch(e) {
+        console.log(`Error getting Polygonscan Transactions. ${e}`)
+      }
+    }
+
+    getTransactions()
+  }, [address, oldestTimeStamp])
+
+  return transactions
+}
+
+export const useOldBalance = (address, assetAddress, days=30) => {
+  const [balance, setBalance] = useState(0)
+  const newestTimeStamp = Math.round((new Date()). getTime() / 1000) - (days || 30) * 24 * 60 * 60
+
+  useEffect(() => {
+    if (!address || !assetAddress) return 0
+
+    const getTransactions = async () => {
+      const urlBlockN =
+        `https://api.polygonscan.com/api?`
+        +`module=block&`
+        +`action=getblocknobytime&`
+        +`timestamp=${newestTimeStamp}&`
+        +`closest=before&`
+        +`apikey=${PS_KEY}`
+      const urlTxs =
+        `https://api.polygonscan.com/api?`
+        +`module=account&`
+        +`action=tokentx&`
+        +`address=${address}&`
+        +`contractaddress=${assetAddress}&`
+        +`startblock=1&`
+        +`endblock=BLOCKNUMBER&`
+        +`page=1&`
+        +`offset=10000&`
+        +`sort=asc&`
+        +`apikey=${PS_KEY}`
+
+      let blockNumber = 1
+
+      try{
+        const response = await fetch(
+          urlBlockN,
+        )
+        const data = await response.json()
+
+        blockNumber = data.result
+
+      } catch(e) {
+        console.log(`Error getting oldest blocknumber. ${e}`)
+      }
+
+      try{
+        const response = await fetch(
+          urlTxs.replace('BLOCKNUMBER',blockNumber),
+        )
+        const data = await response.json()
+
+        if(data.message === 'OK') {
+          let _balance = 0
+
+          data.result.forEach(tx => {
+            if(tx.from === address.toLowerCase())
+              _balance -= utils.formatUnits(tx.value,tx.tokenDecimal)*1
+            else
+              _balance += utils.formatUnits(tx.value,tx.tokenDecimal)*1
+          })
+
+          setBalance(_balance)
+        }
+
+      } catch(e) {
+        console.log(`Error getting Polygonscan Transactions. ${e}`)
+      }
+    }
+
+    getTransactions()
+  }, [address, assetAddress, newestTimeStamp])
+
+  return balance
 }
