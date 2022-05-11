@@ -36,7 +36,7 @@ export const WalletContextProvider = ({ children }) => {
   // Read the balance of the user's wallet
   const polygonMCO2Balance = useContractReader(polygonContracts, 'PMCO2', 'balanceOf', [address], HOOK_OPTIONS)
 
-  const polygonBCTBalance = useContractReader(polygonContracts, 'PBCT', 'balanceOf', [address], HOOK_OPTIONS)
+  const polygonBCTBalance = useContractReader(polygonContracts, 'BCT', 'balanceOf', [address], HOOK_OPTIONS)
 
   const polygonNCTBalance = useContractReader(polygonContracts, 'NCT', 'balanceOf', [address], HOOK_OPTIONS)
 
@@ -60,6 +60,8 @@ export const WalletContextProvider = ({ children }) => {
   const yourTreejerBalance = treejerBalance && treejerBalance.toNumber && treejerBalance.toNumber()
   const entTreeBalance = useContractReader(contracts, 'ENT', 'balanceOf', [address])
   const yourETBalance = entTreeBalance && entTreeBalance.toNumber && entTreeBalance.toNumber()
+  const toucanCertsBalance = useContractReader(contracts, 'TOUCANCERTS', 'balanceOf', [address])
+  const yourTCBalance = toucanCertsBalance && toucanCertsBalance.toNumber && toucanCertsBalance.toNumber()
 
   useEffect(() => {
     const getData = async () => {
@@ -89,6 +91,7 @@ export const WalletContextProvider = ({ children }) => {
     yourKTBalance,
     yourETBalance,
     yourTreejerBalance,
+    yourTCBalance,
     tonsPledged,
     contracts,
     polygonContracts,

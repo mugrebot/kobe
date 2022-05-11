@@ -9,7 +9,7 @@ import { StyledButton } from '../common/StyledButton'
 import { TableInfo } from './TableInfo'
 
 const { Title } = Typography
-const MyRegenPositions = ({ handleModalUp }) => {
+const MyToucanPositions = ({ handleModalUp }) => {
   const [showAll, setShowAll] = useState(false)
   const { USDPrices, walletBalance } = useContext(WalletContext)
   const { indexUSDPrices } = useContext(IndexContext)
@@ -38,17 +38,11 @@ const MyRegenPositions = ({ handleModalUp }) => {
     <>
       <Row>
         <Col span={24}>
-          <Title level={2}>Your regen positions</Title>
-          <TableInfo data={showAll || tableData.length < 10 ? tableData : tableData.slice(0, 3)} handleModalUp={handleModalUp} />
+          <TableInfo data={tableData} handleModalUp={handleModalUp} />
         </Col>
       </Row>
-      {tableData.length >= 10 && <Row justify="center" className="my-md">
-        <StyledButton $type="primary" onClick={() => setShowAll(showAll => !showAll)}>
-          {!showAll ? 'See all my tokens' : 'Hide some tokens'}
-        </StyledButton>
-      </Row>}
     </>
   )
 }
 
-export default MyRegenPositions
+export default MyToucanPositions

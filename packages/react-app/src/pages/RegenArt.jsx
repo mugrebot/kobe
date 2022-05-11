@@ -44,7 +44,7 @@ const RegenArt = () => {
 
   const mintPriceTreejer = useContractReader(contracts, 'TREEJER', 'price', HOOK_OPTIONS)
 
-  const vendorApproval = useContractReader(contracts, 'PBCT', 'allowance', [address, treeAddress], HOOK_OPTIONS)
+  const vendorApproval = useContractReader(contracts, 'BCT', 'allowance', [address, treeAddress], HOOK_OPTIONS)
   const vendorApprovalDAI = useContractReader(contracts, 'DAI', 'allowance', [address, treejerAddress], HOOK_OPTIONS)
 
   const gasPrice = useGasPrice(targetNetwork, 'fast')
@@ -52,7 +52,7 @@ const RegenArt = () => {
 
   const handleApproveBCT = async () => {
     setApprovingBCT(true)
-    await tx(writeContracts.PBCT.approve(contracts.KoyweCollectibles.address, mintPrice))
+    await tx(writeContracts.BCT.approve(contracts.KoyweCollectibles.address, mintPrice))
     setApprovingBCT(false)
   }
 

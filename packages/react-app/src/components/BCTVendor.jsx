@@ -27,7 +27,7 @@ export default function BCTVendor({ address, readContracts, writeContracts, pric
 
   const vendorAddress = readContracts && readContracts.BCTVendor && readContracts.BCTVendor.address
 
-  const vendorTokenBalance = useContractReader(readContracts, 'PBCT', 'balanceOf', [vendorAddress], HOOK_OPTIONS)
+  const vendorTokenBalance = useContractReader(readContracts, 'BCT', 'balanceOf', [vendorAddress], HOOK_OPTIONS)
 
   const tokensPerEthSell = useContractReader(readContracts, 'BCTVendor', 'maticPerBCTSell', HOOK_OPTIONS)
   const tokensPerEthBuy = useContractReader(readContracts, 'BCTVendor', 'maticPerBCTBuy', HOOK_OPTIONS)
@@ -41,7 +41,7 @@ export default function BCTVendor({ address, readContracts, writeContracts, pric
   const ethCostToSellTokens =
     tokenSellAmount && tokensPerEthSell && ethers.utils.parseEther(`${tokenSellAmount * parseFloat(tokensPerEthSell)}`)
 
-  const vendorApproval = useContractReader(readContracts, 'PBCT', 'allowance', [address, vendorAddress], HOOK_OPTIONS)
+  const vendorApproval = useContractReader(readContracts, 'BCT', 'allowance', [address, vendorAddress], HOOK_OPTIONS)
 
   useEffect(() => {
     const tokenSellAmountBN = tokenSellAmount && ethers.utils.parseEther(`${tokenSellAmount}`)
@@ -125,7 +125,7 @@ export default function BCTVendor({ address, readContracts, writeContracts, pric
                   onClick={async () => {
                     setSelling(true)
                     await tx(
-                      writeContracts.PBCT.approve(
+                      writeContracts.BCT.approve(
                         readContracts.BCTVendor.address,
                         tokenSellAmount && ethers.utils.parseEther(tokenSellAmount),
                       ),
