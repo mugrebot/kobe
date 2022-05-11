@@ -18,7 +18,7 @@ export const TableInfo = ({ data }) => {
       render: tokenProp => (
         <Row justify="space-between" align="middle">
           <Text>{tokenProp.title}</Text>
-          <Image src={tokenProp.icon} preview={false} height={42} />
+          <Image src={tokenProp.icon} preview={false} height={42} width={42} />
         </Row>
       ),
     },

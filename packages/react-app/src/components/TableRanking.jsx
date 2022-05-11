@@ -91,7 +91,7 @@ export const TableRanking = ({
       align: 'center',
       render: args => (
         <Row justify="space-around" align="middle">
-          <TokenTotal address={args[0]} tokenName="PBCT" contract={polyContracts} HOOK_OPTIONS={HOOK_OPTIONS} /> BCT
+          <TokenTotal address={args[0]} tokenName="BCT" contract={polyContracts} HOOK_OPTIONS={HOOK_OPTIONS} /> BCT
         </Row>
       ),
     },

@@ -13,7 +13,7 @@ export const Pledge = co2tons => {
 }
 
 export const Staked = ({ address, polyContracts, HOOK_OPTIONS }) => {
-  const myPolyKlimaBalance = useContractReader(polyContracts, 'PBCT', 'balanceOf', [address], HOOK_OPTIONS)
+  const myPolyKlimaBalance = useContractReader(polyContracts, 'BCT', 'balanceOf', [address], HOOK_OPTIONS)
 
   const skilmaBalance = (
     (myPolyKlimaBalance && myPolyKlimaBalance > 0 ? myPolyKlimaBalance : 0) / Math.pow(10, 18)
@@ -34,7 +34,7 @@ export const Balance = ({ address, polyContracts, USDPrices, HOOK_OPTIONS }) => 
   // Polybalances
   const myPolyMCO2Balance = useContractReader(polyContracts, 'PMCO2', 'balanceOf', [address], HOOK_OPTIONS)
 
-  const myPolyBCTBalance = useContractReader(polyContracts, 'PBCT', 'balanceOf', [address], HOOK_OPTIONS)
+  const myPolyBCTBalance = useContractReader(polyContracts, 'BCT', 'balanceOf', [address], HOOK_OPTIONS)
 
   const myPolyNCTBalance = useContractReader(polyContracts, 'NCT', 'balanceOf', [address], HOOK_OPTIONS)
 

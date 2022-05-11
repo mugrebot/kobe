@@ -12,7 +12,11 @@ const StyledTable = styled(Table)`
   width: 100%;
 `
 
-export const TableInfo = ({ data, handleModalUp, isTokenOrIndex }) => {
+export const TableInfo = ({ data, handleModalUp }) => {
+  data = data.filter(t => {
+    return t.buy.symbol === 'BCT' || t.buy.symbol === 'NCT' || t.buy.symbol === 'TCO2'
+  })
+
   const columns = [
     {
       title: 'Token',
@@ -45,28 +49,15 @@ export const TableInfo = ({ data, handleModalUp, isTokenOrIndex }) => {
       key: 'description',
     },
     {
-      title: 'Contract',
-      dataIndex: 'contract',
-      key: 'contract',
-      render: contract => (
-        <Row justify="space-between" align="middle">
-          <Text>{contract.title}</Text>
-          <a href={contract.url} target="_blank">
-            <Image src="icon/leave.svg" preview={false} height={24} />
-          </a>
-        </Row>
-      ),
-    },
-    {
       title: 'Action',
       dataIndex: 'buy',
       key: 'buy',
-      render: props => handleModalUp && props.meta && props.meta === 'index' || props.meta === 'token' ?
+      render: props => handleModalUp && props.symbol ?
       <StyledButton
         onClick={() => {
           handleModalUp(props.symbol)
         }}
-        $type="primary">{props.title}
+        $type="primary">Redeem for TCO2
       </StyledButton>
       :
       <StyledButton href={props.url} target="_blank" $type="primary">{props.title}</StyledButton>,

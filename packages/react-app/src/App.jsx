@@ -11,6 +11,7 @@ import DebugPage from './pages/DebugPage'
 import EmissionPage from './pages/Emission'
 import Journey from './pages/Journey'
 import Metrics from './pages/metrics'
+import Offsets from './pages/Offsets'
 import Pledge from './pages/Pledge'
 import Ranking from './pages/Ranking'
 import ReFi from './pages/ReFi'
@@ -52,6 +53,9 @@ const App = () => {
               </Route>
               <Route exact path="/calculator">
                 <CalculatorPage />
+              </Route>
+              <Route exact path="/offsets">
+                <Offsets />
               </Route>
               <Route exact path="/metrics">
                 <Metrics />

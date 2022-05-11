@@ -12,37 +12,24 @@ const StyledTable = styled(Table)`
   width: 100%;
 `
 
-export const TableInfo = ({ data, handleModalUp, isTokenOrIndex }) => {
+export const TCOTableInfo = ({ data, handleModalUp }) => {
   const columns = [
     {
       title: 'Token',
       dataIndex: 'token',
       key: 'token',
       render: tokenProp => (
-        <Row justify="space-between" align="middle">
-          <a href={tokenProp.url} target="_blank">
+        <a href={tokenProp.url} target="_blank">
+          <Row justify="space-between" align="middle">
             <Text>{tokenProp.title}</Text>
-          </a>
-          <a href={tokenProp.url} target="_blank">
-            <Image src={tokenProp.icon} preview={false} height={42} width={42} />
-          </a>
-        </Row>
+          </Row>
+        </a>
       ),
     },
     {
-      title: 'Position (USD)',
-      dataIndex: 'position',
-      key: 'position',
-    },
-    {
-      title: 'Position (units)',
+      title: 'CO2 Tons',
       dataIndex: 'co2',
       key: 'co2',
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
     },
     {
       title: 'Contract',
@@ -61,12 +48,12 @@ export const TableInfo = ({ data, handleModalUp, isTokenOrIndex }) => {
       title: 'Action',
       dataIndex: 'buy',
       key: 'buy',
-      render: props => handleModalUp && props.meta && props.meta === 'index' || props.meta === 'token' ?
+      render: props => handleModalUp && props.symbol ?
       <StyledButton
         onClick={() => {
           handleModalUp(props.symbol)
         }}
-        $type="primary">{props.title}
+        $type="primary">Retire
       </StyledButton>
       :
       <StyledButton href={props.url} target="_blank" $type="primary">{props.title}</StyledButton>,
