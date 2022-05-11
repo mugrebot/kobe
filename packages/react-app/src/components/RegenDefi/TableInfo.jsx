@@ -12,7 +12,7 @@ const StyledTable = styled(Table)`
   width: 100%;
 `
 
-export const TableInfo = ({ data, handleModalUp }) => {
+export const TableInfo = ({ data, handleModalUp, isTokenOrIndex }) => {
   const columns = [
     {
       title: 'Token',
@@ -61,7 +61,7 @@ export const TableInfo = ({ data, handleModalUp }) => {
       title: 'Action',
       dataIndex: 'buy',
       key: 'buy',
-      render: props => handleModalUp && props.meta && props.meta === 'index'||'token' ?
+      render: props => handleModalUp && props.meta && props.meta === 'index' || props.meta === 'token' ?
       <StyledButton
         onClick={() => {
           handleModalUp(props.symbol)

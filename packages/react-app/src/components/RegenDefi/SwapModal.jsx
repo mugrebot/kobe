@@ -127,98 +127,49 @@ export default function SwapModal({ writeContracts, contracts, tx, modalUp, hand
 
 
 
-if(tokenDetails0x && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
-      for(const token of tokenDetails0x) {
-        const tokenDecimals = await set.erc20.getDecimalsAsync(tokenDetails0x.buyTokenAddress)
-
-        console.log(tokenDecimals)
+if(setDetails && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
 
 
-      }
+
+  const _params = {
+
+    buyToken: await tokenTexts[setDetails]?.address,
+    buyAmount: `${_indexAmount * 10**18}`,
+    sellToken: `WETH`,
+    slippagePercentage: '0.03',
+    feeRecipient: '0x4218A70C7197CA24e171d5aB71Add06a48185f6a',
+    buyTokenPercentageFee: '0.02',
+
+  }
+
+  const response = await fetch(
+    `https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(_params)}`,
+   )
+   const tokdata = await response.json()
+
+   setResponse(tokdata)
+   setTradeQuotes(tokdata.data)
+
+   console.log('this is the symbol', setDetails)
 
      // const quotes = await set.utils.batchFetchSwapQuoteAsync(tokenDetails0x,true,tokenTexts[setDetails.symbol].address,set.setToken,gasPrice)
 
-      setTradeQuotes(tokenDetails0x.data)
 
-      let totalWeth = 0
 
-      for(const quote of _indexAmount)
+
+  let totalWeth=0
+
         // const slippage = isNaN(parseFloat(quote.slippagePercentage)) ? 0 : parseFloat(quote.slippagePercentage)/100
-       totalWeth += Number(_indexAmount) * (1 + 0.03) // adding 3% worked better than the 0x slippage... TODO: a better way to calculate this
+    totalWeth += Number(await tokdata.guaranteedPrice) * (1 + 0.03) * Number(await _indexAmount) // adding 3% worked better than the 0x slippage... TODO: a better way to calculate this
 
       setBuyWethAmount(totalWeth.toFixed(18))
+      console.log(totalWeth)
     } else {
       setBuyWethAmount(null)
       setTradeQuotes([])
     }
     setQuoting(false)
   }
-
-
-
-  useEffect(() => {
-    const getParams = async () => {
-
-console.log('outside', setDetails)
-
-    if (setDetails) {
-      console.log('inside', setDetails)
-
-      const _params = {
-
-        buyToken: tokenTexts[setDetails]?.address,
-        sellToken: `WETH`,
-        sellAmount: `${indexAmount * 10**18}`,
-        slippagePercentage: '0.03',
-        feeRecipient: '0x4218A70C7197CA24e171d5aB71Add06a48185f6a',
-        buyTokenPercentageFee: '0.02',
-
-      }
-
-      setParams(_params)
-    }
-  }
-
-  getParams()
-}, [setDetails])
-
-
-  //   if(setDetails && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
-         useEffect(() => {
-             const getTokenData = async () => {
-               const response = await fetch(
-                `https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(params)}`,
-               )
-               const tokdata = await response.json()
-
-               setResponse(tokdata)
-
-               // eslint-disable-next-line dot-notation
-               console.log(`https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(params)}`)
-
-
-                tokenDetails0x.push ({
-                    data: tokdata.data,
-                    priceofEth: tokdata.price,
-                    tokTo: tokdata.to,
-                    value: tokdata.value,
-                    gas: tokdata.gas,
-                    _gasprice: tokdata.gasPrice,
-
-                })
-
-
-
-
-
-                console.log(tokdata)
-                console.log(tokenDetails0x)
-
-
-             }
-
-             getTokenData()
-           }, [])
 
 
 
@@ -232,7 +183,7 @@ console.log('outside', setDetails)
                     return sushiToken.address === tokenTexts[token].address
                   })
 
-                  console.log(_token.logoURI)
+
 
                   return {
                     key: tokenTexts[token].address,
@@ -244,11 +195,12 @@ console.log('outside', setDetails)
                 })
 
                 setSetPositions(tokens)
-                console.log(tokens)
+
               }
             }
 
             getSetDetails()
+
 
           }, [setDetails])
 
@@ -257,18 +209,20 @@ console.log('outside', setDetails)
 
      const handleIssuance = async () => {
       setBuying(true)// issueExactSetFromToken
-      console.log(gasPrice)
+
 
       const newTx = {
-        from: address,
+        from: await address,
         to: ZERO_EX_ADDRESS,
-        data: await _response.data,
+        data: tradeQuotes,
+        gasPrice: utils.parseUnits(`${gasPrice}`,9) ,
         value: buyWethAmount && utils.parseEther(buyWethAmount),
       }
 
-      console.log(newTx)
 
-      await tx(newTx)
+
+console.log(gasPrice)
+      await tx(newTx),
       setBuying(false)
     }
 
@@ -276,6 +230,8 @@ console.log('outside', setDetails)
 
 
   useEffect(() => {
+
+
     const buyWethAmountBN = buyWethAmount && utils.parseEther(`${buyWethAmount}`)
 
     if (issuerApproval && buyWethAmountBN) setIsWethApproved(issuerApproval.gte(buyWethAmountBN))

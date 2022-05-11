@@ -91,6 +91,7 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
     setQuoting(true)
     setIndexAmount(_indexAmount)
 
+
     const _proportions = []
 
     if(setDetails && !isNaN(Number(_indexAmount)) && Number(_indexAmount) > 0) {
@@ -169,8 +170,13 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
 
   }, [USDPrices, address, set, setDetails])
 
+
+
   useEffect(() => {
+
+
     const buyWethAmountBN = buyWethAmount && utils.parseEther(`${buyWethAmount}`)
+
 
     if (issuerApproval && buyWethAmountBN) setIsWethApproved(issuerApproval.gte(buyWethAmountBN))
   }, [buyWethAmount, issuerApproval])

@@ -170,7 +170,6 @@ export const createTableData = (USDPrices, BTC, MCO2, NCT, KLIMA, sKLIMA, CNBED,
         url: 'https://polygonscan.com/address/0xb0C22d8D350C67420f06F48936654f567C73E8C8',
       },
       buy: {
-        meta: 'staked thing',
         title: 'Stake KLIMA',
         url: 'https://dapp.klimadao.finance/#/stake',
         symbol: 'sKLIMA',
