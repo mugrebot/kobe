@@ -16,7 +16,6 @@ import { WalletContext } from '../contexts/WalletContext'
 import { Transactor } from '../helpers'
 import { getFightData } from '../helpers/dashboardData'
 
-
 const { Title } = Typography
 
 const ReFi = () => {

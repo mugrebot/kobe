@@ -63,7 +63,6 @@ export const WalletContextProvider = ({ children }) => {
   const toucanCertsBalance = useContractReader(contracts, 'TOUCANCERTS', 'balanceOf', [address])
   const yourTCBalance = toucanCertsBalance && toucanCertsBalance.toNumber && toucanCertsBalance.toNumber()
 
-
   useEffect(() => {
     const getData = async () => {
       const response = await fetch(
@@ -75,7 +74,6 @@ export const WalletContextProvider = ({ children }) => {
     }
 
     getData()
-
   }, [])
 
   const value = {
