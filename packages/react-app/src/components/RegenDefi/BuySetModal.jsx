@@ -108,7 +108,6 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
 
       const quotes = await set.utils.batchFetchSwapQuoteAsync(_proportions,true,tokenTexts[setDetails.symbol].address,set.setToken,gasPrice)
 
-      console.log('this is the symbol', setDetails.symbol)
       setTradeQuotes(quotes.map(quote => {
         return quote.calldata
       }))
@@ -139,6 +138,7 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
       false,
       { gasPrice: utils.parseUnits(`${gasPrice}`,9) },
     ))
+    handleModalDown()
     setBuying(false)
   }
 
@@ -150,8 +150,6 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
             return sushiToken.address === token.component
           })
 
-          console.log(utils.formatUnits(token.unit, _token.decimals))
-
           return {
             key: token.component,
             logoURI: _token.logoURI,
@@ -162,7 +160,6 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
         })
 
         setSetPositions(tokens)
-        console.log(tokens)
       }
     }
 
@@ -256,7 +253,7 @@ export default function BuySetModal({ writeContracts, contracts, tx, modalUp, ha
               Approve WETH
             </StyledButton>
             <StyledButton loading={buying} $type="primary" disabled={!isWethApproved || !buyWethAmount || wethFormated < buyWethAmount} onClick={handleIssuance}>
-              Issue Index Tokens
+              Issue {setDetails && setDetails.symbol} Tokens
             </StyledButton>
           </Row>
       </Modal>
