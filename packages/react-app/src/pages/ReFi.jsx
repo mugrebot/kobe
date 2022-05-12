@@ -16,7 +16,6 @@ import { WalletContext } from '../contexts/WalletContext'
 import { Transactor } from '../helpers'
 import { getFightData } from '../helpers/dashboardData'
 
-
 const { Title } = Typography
 
 const ReFi = () => {
@@ -31,7 +30,9 @@ const ReFi = () => {
   const [balance,setBalance] = useState(0)
   const [currentSet,setCurrentSet] = useState(null)
   const [gasSet,setGasSet] = useState()
-  const [modalUp, setModalUp] = useState(false)
+  const [indexModalUp, setIndexModalUp] = useState(false)
+  const [swapModalUp, setSwapModalUp] = useState(false)
+  const [swapping, setSwapping] = useState(false)
 
   const tx = gasSet && Transactor(userSigner, gasSet)
 
@@ -47,8 +48,6 @@ const ReFi = () => {
   }, [setObject])
 
   const handleModalUp = symbol => {
-    setModalUp(true)
-
     if (indexContextDetails.find(set => {
       return set.symbol === symbol
     })) {
@@ -56,17 +55,23 @@ const ReFi = () => {
       return set.symbol === symbol
     })
 
+    setSwapping(false)
+    setIndexModalUp(true)
     setCurrentSet(_currentSet)
   } else {
     const _currentSet = symbol
 
+    setSwapping(true)
+    setSwapModalUp(true)
     setCurrentSet(_currentSet)
   }
 }
 
 const handleModalDown = () => {
-  setModalUp(false)
+  setIndexModalUp(false)
+  setSwapModalUp(false)
   setCurrentSet(null)
+  setSwapping(false)
 }
 
 useEffect(() => {
@@ -89,17 +94,15 @@ useEffect(() => {
 }, [isLoadingBalances])
 
 
-if (currentSet === 'MCO2' || currentSet === 'BCT' || currentSet === 'NCT' || currentSet === 'KLIMA')
-  return (
+return (
     <Row justify="center" className="mb-md">
-      {!isLoadingAccount && address && writeContracts && contracts &&
+      {!isLoadingAccount && address && writeContracts && contracts && swapping &&
       <SwapModal
-        set={setObject}
         setDetails={[currentSet]}
         writeContracts={writeContracts}
         contracts={contracts}
         tx={tx}
-        modalUp={modalUp}
+        modalUp={swapModalUp}
         handleModalDown={handleModalDown}
         address={address}
         gasPrice={gasSet}
@@ -107,35 +110,14 @@ if (currentSet === 'MCO2' || currentSet === 'BCT' || currentSet === 'NCT' || cur
         wethBalance={polygonWethBalance}
       />
       }
-      <Col span={24} style={{ textAlign:'center' }} >
-        <Title level={2}>Total Portfolio Value: {balance} USD</Title>
-      </Col>
-      {/* <Col>
-        {!isLoadingAccount && address && <PortfolioChart />}
-      </Col> */}
-      {/* <Col>
-        {!isLoadingAccount && address && polyTransactions && <TokenTransactions polyTransactions={polyTransactions} address={address} />}
-      </Col> */}
-      <Col span={24}>
-        {!isLoadingAccount && address && <MyRegenPositionsFull handleModalUp={handleModalUp} />}
-      </Col>
-      <Col>
-        {!isLoadingAccount && address && <SimpleRamp address={address} />}
-        {isLoadingAccount && !address && <ConnectButton />}
-      </Col>
-    </Row>
-  )
- else
-  return (
-    <Row justify="center" className="mb-md">
-      {!isLoadingAccount && address && writeContracts && contracts &&
+      {!isLoadingAccount && address && writeContracts && contracts && !swapping &&
       <BuySetModal
         set={setObject}
         setDetails={currentSet}
         writeContracts={writeContracts}
         contracts={contracts}
         tx={tx}
-        modalUp={modalUp}
+        modalUp={indexModalUp}
         handleModalDown={handleModalDown}
         address={address}
         gasPrice={gasSet}

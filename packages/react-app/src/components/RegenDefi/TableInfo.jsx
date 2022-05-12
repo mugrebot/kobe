@@ -12,7 +12,7 @@ const StyledTable = styled(Table)`
   width: 100%;
 `
 
-export const TableInfo = ({ data, handleModalUp, isTokenOrIndex }) => {
+export const TableInfo = ({ data, handleModalUp }) => {
   const columns = [
     {
       title: 'Token',

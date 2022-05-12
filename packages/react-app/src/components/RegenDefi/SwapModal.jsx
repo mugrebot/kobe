@@ -1,13 +1,11 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Button, Card, Image, Input, Modal, Row, Table, Tooltip } from 'antd'
-import { useContractReader, useUserProviderAndSigner } from 'eth-hooks'
-import { parseBytes32String } from 'ethers/lib/utils'
+import { useContractReader } from 'eth-hooks'
 import styled from 'styled-components'
 
-import { IndexContext } from '../../contexts/IndexContext'
 import sushiTokenList from '../../sushiTL.json'
 import { StyledButton } from '../common/StyledButton'
 
@@ -23,7 +21,7 @@ const StyledTable = styled(Table)`
 const ZERO_EX_ADDRESS = '0xdef1c0ded9bec7f1a1670819833240f027b25eff'
 
 // TODO: Add prices to preview. Add option to get new quotes from 0x after some time has gone or do it automatically
-export default function SwapModal({ writeContracts, contracts, tx, modalUp, handleModalDown, symbol, address, set, gasPrice, USDPrices, wethBalance, handleModalUp, setDetails }) {
+export default function SwapModal({ writeContracts, contracts, tx, modalUp, handleModalDown, symbol, address, USDPrices, wethBalance, setDetails }) {
   const tokenTexts = {
     'MCO2' : {
       address: '0xAa7DbD1598251f856C12f63557A4C4397c253Cea',
@@ -92,6 +90,7 @@ export default function SwapModal({ writeContracts, contracts, tx, modalUp, hand
   const [buyWethAmount, setBuyWethAmount] = useState()
   const [isWethApproved, setIsWethApproved] = useState()
   const [_response, setResponse] = useState()
+  const [zeroXError, setZeroXError] = useState()
   const [params, setParams] = useState()
 
   const issuerAddress = ZERO_EX_ADDRESS
@@ -116,31 +115,39 @@ export default function SwapModal({ writeContracts, contracts, tx, modalUp, hand
         buyToken: tokenTexts[setDetails]?.address,
         buyAmount: `${_indexAmount * 10**18}`,
         sellToken: `WETH`,
-        slippagePercentage: '0.03',
+        takerAddress: address,
         feeRecipient: '0x4218A70C7197CA24e171d5aB71Add06a48185f6a',
         buyTokenPercentageFee: '0.02',
 
       }
-      const response = await fetch(
-        `https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(_params)}`,
-      )
-      const tokdata = await response.json()
 
-      console.log('tokdata',tokdata)
-      setResponse(tokdata)
-      setTradeQuotes(tokdata.data)
-      // console.log('this is the symbol', setDetails)
-        // const quotes = await set.utils.batchFetchSwapQuoteAsync(tokenDetails0x,true,tokenTexts[setDetails.symbol].address,set.setToken,gasPrice)
+      try{
+        const response = await fetch(
+          `https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(_params)}`,
+        )
+        const tokdata = await response.json()
 
-      // let totalWeth=0
+        if(tokdata.code === 100) {
+          let errorMsg = ''
 
-          // const slippage = isNaN(parseFloat(quote.slippagePercentage)) ? 0 : parseFloat(quote.slippagePercentage)/100
-      // totalWeth += Number(await tokdata.guaranteedPrice) * (1 + 0.03) * Number(await _indexAmount) // adding 3% worked better than the 0x slippage... TODO: a better way to calculate this
 
-      setBuyWethAmount(utils.formatEther(tokdata.sellAmount))
+          tokdata.validationErrors.forEach(error => {
+            errorMsg+=` ${error.reason} |`
+          })
+          setZeroXError(`ERROR: |${errorMsg}`)
+        } else {
+          setResponse(tokdata)
+          setTradeQuotes(tokdata.data)
+          setBuyWethAmount(utils.formatEther(tokdata.sellAmount))
+          setZeroXError(null)
+        }
+      } catch(e) {
+        console.log('Error while trying to get a 0x quote: ',e)
+      }
     } else {
       setBuyWethAmount(null)
       setTradeQuotes([])
+      setZeroXError(null)
     }
     setQuoting(false)
   }
@@ -171,19 +178,19 @@ export default function SwapModal({ writeContracts, contracts, tx, modalUp, hand
     getSetDetails()
   }, [setDetails])
 
-  const handleIssuance = async () => {
-    setBuying(true)// issueExactSetFromToken
-    console.log('response',_response)
+  const handleTrade = async () => {
+    setBuying(true)
 
     const newTx = {
       to: _response.to,
       data: tradeQuotes,
-      gasPrice: utils.parseUnits(`${gasPrice}`,9) ,
+      gasPrice: utils.parseUnits(_response.gasPrice,'wei'),
+      gasLimit: utils.parseUnits(_response.gas,'wei'),
       value: BigNumber.from(_response.value),
     }
 
-    console.log(newTx)
     await tx(newTx)
+    handleModalDown()
     setBuying(false)
   }
 
@@ -245,7 +252,7 @@ export default function SwapModal({ writeContracts, contracts, tx, modalUp, hand
               size="small"
               type="inner"
               title={`Paying in WETH (Estimate):`}
-              extra={wethFormated < buyWethAmount && 'Not Enough WETH Balance' || quoting && <LoadingOutlined />}
+              extra={zeroXError || wethFormated < buyWethAmount && 'Not Enough WETH Balance' || quoting && <LoadingOutlined />}
               style={{ width: 400, textAlign: 'left' }}
             >
               <Input.Group compact>
@@ -267,8 +274,8 @@ export default function SwapModal({ writeContracts, contracts, tx, modalUp, hand
             <StyledButton loading={approving} $type="primary" disabled={isWethApproved || !buyWethAmount} onClick={handleApproveTokens}>
               Approve WETH
             </StyledButton>
-            <StyledButton loading={buying} $type="primary" disabled={!isWethApproved || !buyWethAmount || wethFormated < buyWethAmount} onClick={handleIssuance}>
-              Issue Tokens
+            <StyledButton loading={buying} $type="primary" disabled={!isWethApproved || !buyWethAmount || wethFormated < buyWethAmount || zeroXError} onClick={handleTrade}>
+              Swap WETH for {setDetails && tokenTexts[setDetails]?.symbol}
             </StyledButton>
           </Row>
       </Modal>
