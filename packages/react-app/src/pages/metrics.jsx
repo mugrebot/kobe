@@ -71,10 +71,6 @@ const Metrics = () => {
   priceHistory[dfiAddress] = usePriceHistory(dfiAddress,30,'daily')
   priceHistory[nctAddress] = usePriceHistory(nctAddress,30,'daily')
 
-  const dates = priceHistory[nctAddress] && priceHistory[nctAddress].prices.reverse().map(entry => {
-    return (new Date(entry[0]).toISOString().split('T')[0])
-  })
-
 
   indexTransactions.CBTC = useTokenTransaction('0x7958e9fa5cf56aebedd820df4299e733f7e8e5dd',30)
   indexTransactions.CNBED = useTokenTransaction('0x0765425b334d7db1f374d03f4261ac191172bef7',30)
@@ -84,6 +80,9 @@ const Metrics = () => {
       let _totalTons = 0
 
       if (pledgePSEvents) {
+        const dates = priceHistory[nctAddress] && priceHistory[nctAddress].prices.reverse().map(entry => {
+          return (new Date(entry[0]).toISOString().split('T')[0])
+        })
         const oldestTimeStamp = Math.round((new Date()). getTime() / 1000) - 30 * 24 * 60 * 60
         const filteredEvents = pledgePSEvents
         .filter(event => {
@@ -143,7 +142,9 @@ const Metrics = () => {
   useEffect(() => {
     const prepareChartData = () => {
       const _indexPriceHistory = []
-      const _indexTransactions = []
+      const dates = priceHistory[nctAddress] && priceHistory[nctAddress].prices.reverse().map(entry => {
+        return (new Date(entry[0]).toISOString().split('T')[0])
+      })
 
       if(indexContextDetails && priceHistory[nctAddress]  && priceHistory[wethAddress] && priceHistory[wbtcAddress] && priceHistory[dfiAddress])
         indexContextDetails.forEach(index => {
