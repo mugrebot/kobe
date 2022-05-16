@@ -230,7 +230,7 @@ export default function SwapModal({ writeContracts, contracts, tx, modalUp, hand
             <Card
               size="small"
               type="inner"
-              title={`${setDetails && tokenTexts[setDetails].symbol} tokens to issue:`}
+              title={`${setDetails && tokenTexts[setDetails] && tokenTexts[setDetails].symbol} tokens to issue:`}
               style={{ width: 400, textAlign: 'left' }}
             >
               <Input
