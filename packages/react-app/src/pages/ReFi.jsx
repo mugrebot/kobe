@@ -10,11 +10,13 @@ import BuySetModal from '../components/RegenDefi/BuySetModal'
 import MyRegenPositionsFull from '../components/RegenDefi/MyRegenPositionsFull'
 import SimpleRamp from '../components/RegenDefi/SimpleRamp'
 import SwapModal from '../components/RegenDefi/SwapModal'
+import Swap from '../components/Swap'
 import { IndexContext } from '../contexts/IndexContext'
 import { NetworkContext } from '../contexts/NetworkContext'
 import { WalletContext } from '../contexts/WalletContext'
 import { Transactor } from '../helpers'
 import { getFightData } from '../helpers/dashboardData'
+import sushiTokenList from '../sushiTL.json'
 
 const { Title } = Typography
 
@@ -24,7 +26,7 @@ const ReFi = () => {
 
   const { contracts, USDPrices, walletBalance, isPledged, isLoadingBalances, writeContracts } = useContext(WalletContext)
   const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance, polygonWethBalance, polygonContracts  } = walletBalance
-  const { address, isLoadingAccount, targetNetwork, userSigner } = useContext(NetworkContext)
+  const { address, isLoadingAccount, targetNetwork, userSigner, injectedProvider } = useContext(NetworkContext)
   const { setObject, indexContextDetails, indexUSDPrices } = useContext(IndexContext)
 
   const [balance,setBalance] = useState(0)
@@ -94,10 +96,14 @@ useEffect(() => {
 }, [isLoadingBalances])
 
 
-return (
+if (currentSet === 'MCO2' || currentSet === 'BCT' || currentSet === 'NCT' || currentSet === 'KLIMA')
+
+
+  return (
     <Row justify="center" className="mb-md">
-      {!isLoadingAccount && address && writeContracts && contracts && swapping &&
+      {!isLoadingAccount && address && writeContracts && contracts &&
       <SwapModal
+        set={setObject}
         setDetails={[currentSet]}
         writeContracts={writeContracts}
         contracts={contracts}
@@ -110,7 +116,28 @@ return (
         wethBalance={polygonWethBalance}
       />
       }
-      {!isLoadingAccount && address && writeContracts && contracts && !swapping &&
+      <Col span={24} style={{ textAlign:'center' }} >
+        <Title level={2}>Total Portfolio Value: {balance} USD</Title>
+      </Col>
+      {/* <Col>
+        {!isLoadingAccount && address && <PortfolioChart />}
+      </Col> */}
+      {/* <Col>
+        {!isLoadingAccount && address && polyTransactions && <TokenTransactions polyTransactions={polyTransactions} address={address} />}
+      </Col> */}
+      <Col span={24}>
+        {!isLoadingAccount && address && <MyRegenPositionsFull handleModalUp={handleModalUp} />}
+      </Col>
+      <Col>
+        {!isLoadingAccount && address && <SimpleRamp address={address} />}
+        {isLoadingAccount && !address && <ConnectButton />}
+      </Col>
+    </Row>
+  )
+ else
+  return (
+    <Row justify="center" className="mb-md">
+      {!isLoadingAccount && address && writeContracts && contracts &&
       <BuySetModal
         set={setObject}
         setDetails={currentSet}
@@ -143,6 +170,11 @@ return (
       </Col>
     </Row>
   )
+
+
 }
+
+
+
 
 export default ReFi

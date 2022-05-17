@@ -159,8 +159,12 @@ export default function SwapModal({ writeContracts, contracts, tx, modalUp, hand
       if(setDetails) {
         const tokens = setDetails.map(token => {
           const _token = sushiTokenList.find(sushiToken => {
+
+
             return sushiToken.address === tokenTexts[token].address
           })
+
+
 
           return {
             key: tokenTexts[token].address,
@@ -172,22 +176,28 @@ export default function SwapModal({ writeContracts, contracts, tx, modalUp, hand
         })
 
         setSetPositions(tokens)
+
       }
     }
 
     getSetDetails()
+
+
   }, [setDetails])
 
   const handleTrade = async () => {
     setBuying(true)
 
     const newTx = {
-      to: _response.to,
+      to: ZERO_EX_ADDRESS,
       data: tradeQuotes,
-      gasPrice: utils.parseUnits(_response.gasPrice,'wei'),
-      gasLimit: utils.parseUnits(_response.gas,'wei'),
-      value: BigNumber.from(_response.value),
+      value: Number(_response.value),
+      from: address,
+      gasPrice: Number(utils.parseUnits(_response.gasPrice,'wei')),
+      gasLimit: Number(utils.parseUnits(_response.gas,'wei')),
     }
+
+    console.log(newTx)
 
     await tx(newTx)
     handleModalDown()

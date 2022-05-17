@@ -102,7 +102,7 @@ export const NETWORK = chainId => {
   for (const n in NETWORKS) if (NETWORKS[n].chainId === chainId) return NETWORKS[n]
 }
 
-export const networkOptions = [NETWORKS.polygon.name, 'mainnet', 'rinkeby', 'goerli']
+export const networkOptions = [NETWORKS.polygon.name]
 
 export const EmissionsPerCapitaCountries = {
   'AFG': {
