@@ -19,6 +19,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd'
+import Notify from 'bnc-notify'
 import { useBlockNumber, usePoller } from 'eth-hooks'
 import { ethers, utils } from 'ethers'
 
@@ -34,6 +35,8 @@ export const ROUTER_ADDRESS = '0xdef1c0ded9bec7f1a1670819833240f027b25eff'
 export const ZERO_EX_ADDRESS = '0xdef1c0ded9bec7f1a1670819833240f027b25eff'
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+let  notify = null
 
 const erc20Abi = [
   'function balanceOf(address owner) view returns (uint256)',
@@ -83,10 +86,12 @@ function Swap({ selectedProvider, tokenList, tx }) {
   const [timeLimit, setTimeLimit] = useState(defaultTimeLimit)
   const [swapping, setSwapping] = useState(false)
   const [approving, setApproving] = useState(false)
+  const [approvalNotification, setApprovalNotification] = useState()
   const [settingsVisible, setSettingsVisible] = useState(false)
   const [swapModalVisible, setSwapModalVisible] = useState(false)
   const [rawPrice, setRawPrice] = useState()
   const [zeroXError, setZeroXError] = useState()
+
 
   // const [tokenList, setTokenList] = useState([])
   const [tokens, setTokens] = useState()
@@ -230,8 +235,9 @@ function Swap({ selectedProvider, tokenList, tx }) {
 
       console.log(result)
       setApproving(false)
+      setApprovalNotification(result)
 
-      return true
+      return true, result
     } catch (e) {
       notification.open({
         message: 'Approval unsuccessful',
@@ -239,6 +245,8 @@ function Swap({ selectedProvider, tokenList, tx }) {
       })
     }
   }
+
+
 
   const approveRouter = async () => {
     const approvalAmount =
@@ -250,8 +258,13 @@ function Swap({ selectedProvider, tokenList, tx }) {
 
     const approval = updateRouterAllowance(approvalAmount)
 
-    if (approval)
-      notification.open({
+    notify = Notify(approval)
+
+    console.log(await approvalNotification, await approval)
+
+    if (approval.hash)
+
+        notification.open({
         message: 'Token transfer approved',
         description: `You can now swap up to ${amountIn} ${tokenIn}`,
       })
@@ -328,7 +341,8 @@ function Swap({ selectedProvider, tokenList, tx }) {
 
         // const result = { hash:'hash' }
 
-         const result = await signer.sendTransaction(newTx, Number(utils.parseUnits(tokdata.gasPrice,'wei'), Number(utils.parseUnits(tokdata.gas,'wei'))))
+         const result = await signer.sendTransaction(newTx, { gasPrice: utils.parseUnits(`${tokdata.gasPrice}`,9) }, { gasLimit: utils.parseUnits(`${tokdata.gas}`,9) })
+
        // const result = await tx(newTx)
 
         console.log(result)
