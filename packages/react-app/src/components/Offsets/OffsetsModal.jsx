@@ -17,7 +17,6 @@ const StyledTable = styled(Table)`
   width: 100%;
 `
 
-// TODO: Get new quotes from 0x after some time has gone by
 export default function OffsetsModal({ symbol, tcoContract, writeContracts, contracts, tx, modalUp, handleModalDown, address, USDPrices }) {
   const [token, setToken] = useState()
   const [quoting,setQuoting] = useState(false)
@@ -59,6 +58,8 @@ export default function OffsetsModal({ symbol, tcoContract, writeContracts, cont
     handleModalDown()
     setInputAmount(null)
   }
+
+  // TODO: Get certificate context from projects. From the certificate contract, call getUserEvents to get all certificates associated to address, then call 'retirements' using the eventid to get the projectVintageTokenId
 
   useEffect(() => {
     const getToken = () => {

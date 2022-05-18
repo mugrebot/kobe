@@ -79,7 +79,7 @@ const Metrics = () => {
     const preparePledgeData = () => {
       let _totalTons = 0
 
-      if (pledgePSEvents) {
+      if (pledgePSEvents && priceHistory[nctAddress]) {
         const dates = priceHistory[nctAddress] && priceHistory[nctAddress].prices.reverse().map(entry => {
           return (new Date(entry[0]).toISOString().split('T')[0])
         })
@@ -142,11 +142,12 @@ const Metrics = () => {
   useEffect(() => {
     const prepareChartData = () => {
       const _indexPriceHistory = []
-      const dates = priceHistory[nctAddress] && priceHistory[nctAddress].prices.reverse().map(entry => {
-        return (new Date(entry[0]).toISOString().split('T')[0])
-      })
 
-      if(indexContextDetails && priceHistory[nctAddress]  && priceHistory[wethAddress] && priceHistory[wbtcAddress] && priceHistory[dfiAddress])
+      if(indexContextDetails && priceHistory[nctAddress]  && priceHistory[wethAddress] && priceHistory[wbtcAddress] && priceHistory[dfiAddress]) {
+        const dates = priceHistory[nctAddress] && priceHistory[nctAddress].prices.reverse().map(entry => {
+          return (new Date(entry[0]).toISOString().split('T')[0])
+        })
+
         indexContextDetails.forEach(index => {
           _indexPriceHistory[index.symbol] = []
           index.positions.forEach(position => {
@@ -182,6 +183,7 @@ const Metrics = () => {
         }
 
         setChartData(newChartData)
+      }
     }
 
     prepareChartData()
