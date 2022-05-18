@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-lines-per-function */
 import React, { useEffect, useState } from 'react'
 import { RetweetOutlined, SettingOutlined } from '@ant-design/icons'
 import { ChainId, Fetcher, Percent, Token, TokenAmount, Trade, WETH } from '@uniswap/sdk'
@@ -18,14 +20,18 @@ import {
   Typography,
 } from 'antd'
 import { useBlockNumber, usePoller } from 'eth-hooks'
-import { ethers } from 'ethers'
+import { ethers, utils } from 'ethers'
 
 import { useDebounce } from '../hooks'
 
 const { Option } = Select
 const { Text } = Typography
+const qs = require('qs')
 
-export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
+// export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
+export const ROUTER_ADDRESS = '0xdef1c0ded9bec7f1a1670819833240f027b25eff'
+
+export const ZERO_EX_ADDRESS = '0xdef1c0ded9bec7f1a1670819833240f027b25eff'
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
@@ -49,8 +55,8 @@ const makeCall = async (callName, contract, args, metadata = {}) => {
   return undefined
 }
 
-const defaultToken = 'ETH'
-const defaultTokenOut = 'DAI'
+const defaultToken = 'WETH'
+const defaultTokenOut = 'NCT'
 const defaultSlippage = '0.5'
 const defaultTimeLimit = 60 * 10
 
@@ -61,7 +67,7 @@ const tokenListToObject = array =>
     return obj
   }, {})
 
-function Swap({ selectedProvider, tokenListURI }) {
+function Swap({ selectedProvider, tokenList, tx }) {
   const [tokenIn, setTokenIn] = useState(defaultToken)
   const [tokenOut, setTokenOut] = useState(defaultTokenOut)
   const [exact, setExact] = useState()
@@ -73,16 +79,16 @@ function Swap({ selectedProvider, tokenListURI }) {
   const [routerAllowance, setRouterAllowance] = useState()
   const [balanceIn, setBalanceIn] = useState()
   const [balanceOut, setBalanceOut] = useState()
-  const [slippageTolerance, setSlippageTolerance] = useState(
-    new Percent(Math.round(defaultSlippage * 100).toString(), '10000'),
-  )
+  const [slippageTolerance, setSlippageTolerance] = useState()
   const [timeLimit, setTimeLimit] = useState(defaultTimeLimit)
   const [swapping, setSwapping] = useState(false)
   const [approving, setApproving] = useState(false)
   const [settingsVisible, setSettingsVisible] = useState(false)
   const [swapModalVisible, setSwapModalVisible] = useState(false)
+  const [rawPrice, setRawPrice] = useState()
+  const [zeroXError, setZeroXError] = useState()
 
-  const [tokenList, setTokenList] = useState([])
+  // const [tokenList, setTokenList] = useState([])
   const [tokens, setTokens] = useState()
   const [invertPrice, setInvertPrice] = useState(false)
 
@@ -91,96 +97,69 @@ function Swap({ selectedProvider, tokenListURI }) {
   const signer = selectedProvider.getSigner()
   const routerContract = new ethers.Contract(ROUTER_ADDRESS, IUniswapV2Router02ABI, signer)
 
-  const _tokenListUri = tokenListURI || 'https://gateway.ipfs.io/ipns/tokens.uniswap.org'
+  // const _tokenListUri = tokenListURI || 'https://gateway.ipfs.io/ipns/tokens.uniswap.org'
 
   const debouncedAmountIn = useDebounce(amountIn, 500)
   const debouncedAmountOut = useDebounce(amountOut, 500)
 
-  const activeChainId = process.env.REACT_APP_NETWORK === 'kovan' ? ChainId.KOVAN : ChainId.MAINNET
+  const activeChainId = 137 // process.env.REACT_APP_NETWORK === 'kovan' ? ChainId.KOVAN : ChainId.MAINNET
 
   useEffect(() => {
-    const getTokenList = async () => {
-      console.log(_tokenListUri)
-
-      try {
-        const tokenListResponse = await fetch(_tokenListUri)
-        const tokenListJson = await tokenListResponse.json()
-        const filteredTokens = tokenListJson.tokens.filter(t => {
-          return t.chainId === activeChainId
-        })
-        const ethToken = WETH[activeChainId]
-
-        ethToken.name = 'Ethereum'
-        ethToken.symbol = 'ETH'
-        ethToken.logoURI =
-          'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png'
-
-        const _tokenList = [ethToken, ...filteredTokens]
-
-        setTokenList(_tokenList)
-
-        const _tokens = tokenListToObject(_tokenList)
+    const getTokenList = () => {
+        const _tokens = tokenListToObject(tokenList)
 
         setTokens(_tokens)
-      } catch (e) {
-        console.log(e)
-      }
     }
 
     getTokenList()
-  }, [tokenListURI, _tokenListUri, activeChainId])
+  }, [tokenList, activeChainId])
 
   const getTrades = async () => {
     if (tokenIn && tokenOut && (amountIn || amountOut)) {
-      const pairs = arr => arr.map((v, i) => arr.slice(i + 1).map(w => [v, w])).flat()
 
-      const baseTokens = tokenList
-        .filter(t => {
-          return ['DAI', 'USDC', 'USDT', 'COMP', 'ETH', 'MKR', 'LINK', tokenIn, tokenOut].includes(t.symbol)
-        })
-        .map(el => {
-          return new Token(el.chainId, el.address, el.decimals, el.symbol, el.name)
-        })
 
-      const listOfPairwiseTokens = pairs(baseTokens)
-
-      const getPairs = async list => {
-        const listOfPromises = list.map(item => Fetcher.fetchPairData(item[0], item[1], selectedProvider))
-
-        return Promise.all(listOfPromises.map(p => p.catch(() => undefined)))
+      const _params = {
+        buyToken: tokens[tokenOut].address,
+        sellToken: tokens[tokenIn].address,
+        feeRecipient: '0x4218A70C7197CA24e171d5aB71Add06a48185f6a',
+        buyTokenPercentageFee: '0.02',
       }
 
-      const listOfPairs = await getPairs(listOfPairwiseTokens)
+      exact === 'out' ?
+        _params.buyAmount = ethers.utils.parseUnits(`${amountOut}`,tokens[tokenOut].decimals).toString()
+        :
+        _params.sellAmount = ethers.utils.parseUnits(`${amountIn}`,tokens[tokenIn].decimals).toString()
 
-      let bestTrade
+      if(slippageTolerance) _params.slippagePercentage = slippageTolerance
 
-      if (exact === 'in') {
-        setAmountInMax()
-        bestTrade = Trade.bestTradeExactIn(
-          listOfPairs.filter(item => item),
-          new TokenAmount(tokens[tokenIn], ethers.utils.parseUnits(amountIn.toString(), tokens[tokenIn].decimals)),
-          tokens[tokenOut],
-          { maxNumResults: 3, maxHops: 1 },
+      try{
+        const response = await fetch(
+          `https://polygon.api.0x.org/swap/v1/price?${qs.stringify(_params)}`,
         )
+        const tokdata = await response.json()
 
-        if (bestTrade[0]) setAmountOut(bestTrade[0].outputAmount.toSignificant(6))
-        else setAmountOut()
-      } else if (exact === 'out') {
-        setAmountOutMin()
-        bestTrade = Trade.bestTradeExactOut(
-          listOfPairs.filter(item => item),
-          tokens[tokenIn],
-          new TokenAmount(tokens[tokenOut], ethers.utils.parseUnits(amountOut.toString(), tokens[tokenOut].decimals)),
-          { maxNumResults: 3, maxHops: 1 },
-        )
+        if(tokdata.code === 100) {
+          let errorMsg = ''
 
-        if (bestTrade[0]) setAmountIn(bestTrade[0].inputAmount.toSignificant(6))
-        else setAmountIn()
+          tokdata.validationErrors.forEach(error => {
+            errorMsg+=` ${error.reason} |`
+          })
+          setZeroXError(`ERROR: |${errorMsg}`)
+        } else
+          if (exact === 'in') {
+            setAmountInMax()
+            setAmountOut(Number(ethers.utils.formatUnits(tokdata.buyAmount,tokens[tokenOut].decimals)).toFixed(6))
+            setRawPrice(Number(tokdata.price).toFixed(6))
+          } else if (exact === 'out') {
+            setAmountOutMin()
+            setAmountIn(Number(ethers.utils.formatUnits(tokdata.sellAmount,tokens[tokenIn].decimals)).toFixed(6))
+            setRawPrice(Number(1/tokdata.price).toFixed(6))
+          }
+
+          console.log(tokdata)
+      } catch(e) {
+        console.log('Error while trying to get a 0x quote: ',e)
       }
-
-      setTrades(bestTrade)
-
-      console.log(bestTrade)
     }
   }
 
@@ -295,65 +274,79 @@ function Swap({ selectedProvider, tokenListURI }) {
   const executeSwap = async () => {
     setSwapping(true)
 
-    try {
-      let args
-      const metadata = {}
+    const accountList = await selectedProvider.listAccounts()
+    const address = accountList[0]
 
-      let call
-      const deadline = Math.floor(Date.now() / 1000) + timeLimit
-      const path = trades[0].route.path.map(item => {
-        return item.address
-      })
+    const _params = {
+      buyToken: tokens[tokenOut].address,
+      sellToken: tokens[tokenIn].address,
+      takerAddres: address,
+      feeRecipient: '0x4218A70C7197CA24e171d5aB71Add06a48185f6a',
+      buyTokenPercentageFee: '0.02',
+    }
 
-      console.log(path)
+    exact === 'out' ?
+      _params.buyAmount = ethers.utils.parseUnits(`${amountOut}`,tokens[tokenOut].decimals).toString()
+      :
+      _params.sellAmount = ethers.utils.parseUnits(`${amountIn}`,tokens[tokenIn].decimals).toString()
 
-      const accountList = await selectedProvider.listAccounts()
-      const address = accountList[0]
+    if(slippageTolerance) _params.slippagePercentage = slippageTolerance
 
-      if (exact === 'in') {
-        const _amountIn = ethers.utils.hexlify(ethers.utils.parseUnits(amountIn.toString(), tokens[tokenIn].decimals))
-        const _amountOutMin = ethers.utils.hexlify(ethers.BigNumber.from(amountOutMin.raw.toString()))
+    console.log(`https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(_params)}`)
 
-        if (tokenIn === 'ETH') {
-          call = 'swapExactETHForTokens'
-          args = [_amountOutMin, path, address, deadline]
-          metadata.value = _amountIn
-        } else {
-          call = tokenOut === 'ETH' ? 'swapExactTokensForETH' : 'swapExactTokensForTokens'
-          args = [_amountIn, _amountOutMin, path, address, deadline]
+    try{
+      const response = await fetch(
+        `https://polygon.api.0x.org/swap/v1/quote?${qs.stringify(_params)}`,
+      )
+      const tokdata = await response.json()
+
+      if(tokdata.code === 100) {
+        let errorMsg = ''
+
+        tokdata.validationErrors.forEach(error => {
+          errorMsg+=` ${error.reason} |`
+        })
+        setSwapping(false)
+        notification.open({
+          message: 'Swap unsuccessful',
+          description: `Error: ${errorMsg}`,
+        })
+      } else{
+        console.log(tokdata)
+
+        const newTx = {
+          to: ZERO_EX_ADDRESS,
+          data: tokdata.data,
+          value: ethers.BigNumber.from(tokdata.value),
+          from: address,
         }
-      } else if (exact === 'out') {
-        const _amountOut = ethers.utils.hexlify(
-          ethers.utils.parseUnits(amountOut.toString(), tokens[tokenOut].decimals),
-        )
-        const _amountInMax = ethers.utils.hexlify(ethers.BigNumber.from(amountInMax.raw.toString()))
 
-        if (tokenIn === 'ETH') {
-          call = 'swapETHForExactTokens'
-          args = [_amountOut, path, address, deadline]
-          metadata.value = _amountInMax
-        } else {
-          call = tokenOut === 'ETH' ? 'swapTokensForExactETH' : 'swapTokensForExactTokens'
-          args = [_amountOut, _amountInMax, path, address, deadline]
-        }
+
+
+        console.log(newTx)
+// https://polygon.api.0x.org/swap/v1/quote?buyToken=0x2F800Db0fdb5223b3C3f354886d907A671414A7F&sellToken=0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619&takerAddres=0x40f9bf922c23c43acdad71Ab4425280C0ffBD697&feeRecipient=0x4218A70C7197CA24e171d5aB71Add06a48185f6a&buyTokenPercentageFee=0.02&buyAmount=1000000000000000000
+
+        // const result = { hash:'hash' }
+
+         const result = await signer.sendTransaction(newTx, Number(utils.parseUnits(tokdata.gasPrice,'wei'), Number(utils.parseUnits(tokdata.gas,'wei'))))
+       // const result = await tx(newTx)
+
+        console.log(result)
+
+
+        notification.open({
+          message: 'Swap complete 🌳',
+          description: (
+            <>
+              <Text>{`Swapped ${tokenIn} for ${tokenOut}, transaction: `}</Text>
+              <a href={`https://polygonscan.com/tx/${result.hash}`} target={'_blank'}><Text copyable>{result.hash}</Text></a>
+            </>
+          ),
+        })
+        setSwapping(false)
       }
-      console.log(call, args, metadata)
-
-      const result = await makeCall(call, routerContract, args, metadata)
-
-      console.log(result)
-      notification.open({
-        message: 'Swap complete 🦄',
-        description: (
-          <>
-            <Text>{`Swapped ${tokenIn} for ${tokenOut}, transaction: `}</Text>
-            <Text copyable>{result.hash}</Text>
-          </>
-        ),
-      })
-      setSwapping(false)
-    } catch (e) {
-      console.log(e)
+    } catch(e) {
+      console.log('Error while executing swap: ',e)
       setSwapping(false)
       notification.open({
         message: 'Swap unsuccessful',
@@ -414,14 +407,14 @@ function Swap({ selectedProvider, tokenListURI }) {
     }
   }
 
-  const logoIn = metaIn ? cleanIpfsURI(metaIn.logoURI) : null
-  const logoOut = metaOut ? cleanIpfsURI(metaOut.logoURI) : null
+  const logoIn = metaIn ? metaIn.logoURI : null
+  const logoOut = metaOut ? metaOut.logoURI : null
 
-  const rawPrice = trades && trades[0] ? trades[0].executionPrice : null
-  const price = rawPrice ? rawPrice.toSignificant(7) : null
+  // const rawPrice = trades && trades[0] ? trades[0].executionPrice : null
+  const price = rawPrice ? rawPrice : null
   const priceDescription = rawPrice
     ? invertPrice
-      ? `${rawPrice.invert().toSignificant(7)} ${tokenIn} per ${tokenOut}`
+      ? `${(1/rawPrice).toFixed(6)} ${tokenIn} per ${tokenOut}`
       : `${price} ${tokenOut} per ${tokenIn}`
     : null
 
@@ -440,7 +433,25 @@ function Swap({ selectedProvider, tokenListURI }) {
   )
 
   const swapModal = (
-    <Modal title="Confirm swap" visible={swapModalVisible} onOk={handleSwapModalOk} onCancel={handleSwapModalCancel}>
+    <Modal
+      title="Confirm swap"
+      visible={swapModalVisible}
+      // onOk={handleSwapModalOk}
+      // onCancel={handleSwapModalCancel}
+      footer={[
+        <Button
+          key='cancel'
+          onClick={handleSwapModalCancel}
+        >
+          Cancel
+        </Button>,
+        <Button
+          key='ok'
+          onClick={handleSwapModalOk}
+        >
+          Confirm with your Wallet
+        </Button>,
+      ]}>
       <Row>
         <Space>
           <img src={logoIn} alt={tokenIn} width="30" />
@@ -478,8 +489,8 @@ function Swap({ selectedProvider, tokenListURI }) {
     <Card
       title={
         <Space>
-          <img src="https://ipfs.io/ipfs/QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg" width="40" alt="uniswapLogo" />
-          <Typography>Uniswapper</Typography>
+          <img src="./icon/koywenft.png" width="40" alt="uniswapLogo" />
+          <Typography>Koywe Swapper</Typography>
         </Space>
       }
       extra={
@@ -489,7 +500,7 @@ function Swap({ selectedProvider, tokenListURI }) {
             setSettingsVisible(true)
           }}
         >
-          <SettingOutlined />
+          <small>powered by 0x</small> <SettingOutlined />
         </Button>
       }
     >
@@ -684,9 +695,9 @@ function Swap({ selectedProvider, tokenListURI }) {
               onChange={value => {
                 console.log(value)
 
-                const slippagePercent = new Percent(Math.round(value * 100).toString(), '10000')
+                // const slippagePercent = new Percent(Math.round(value * 100).toString(), '10000')
 
-                setSlippageTolerance(slippagePercent)
+                setSlippageTolerance(value)
               }}
             />
           </Descriptions.Item>
