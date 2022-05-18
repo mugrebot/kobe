@@ -22,13 +22,6 @@ const NetworkSelect = ({ NETWORKCHECK }) => {
     <div style={{ position: 'relative', textAlign: 'right' }}>
       <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
         <div style={{ marginRight: 20 }}>
-          <StyledSelect defaultValue={targetNetwork.name} onChange={value => setSelectedNetwork(value)}>
-            {networkOptions.map(network => (
-              <Option key={network} value={network}>
-                {network}
-              </Option>
-            ))}
-          </StyledSelect>
         </div>
       </div>
       {networkError && NETWORKCHECK && (
