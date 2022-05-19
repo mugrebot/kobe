@@ -192,7 +192,22 @@ function Swap({ selectedProvider, tokenList, tx }) {
     if (tokens) {
       const accountList = await selectedProvider.listAccounts()
 
-      if (tokenIn) {
+      if (tokenIn === 'MATIC') {
+        const tempContractIn = new ethers.Contract('0x0000000000000000000000000000000000001010', erc20Abi, selectedProvider)
+        const newBalanceIn = await getBalance(tokenIn, accountList[0], tempContractIn)
+
+        setBalanceIn(newBalanceIn)
+
+        let allowance
+
+        if (tokenIn === 'ETH') setRouterAllowance()
+        else {
+          allowance = await makeCall('allowance', '0x0000000000000000000000000000000000001010', [accountList[0], ROUTER_ADDRESS])
+          setRouterAllowance(allowance)
+        }
+      }
+
+      if (tokenIn && tokenIn !== 'MATIC') {
         const tempContractIn = new ethers.Contract(tokens[tokenIn].address, erc20Abi, selectedProvider)
         const newBalanceIn = await getBalance(tokenIn, accountList[0], tempContractIn)
 
@@ -205,6 +220,13 @@ function Swap({ selectedProvider, tokenList, tx }) {
           allowance = await makeCall('allowance', tempContractIn, [accountList[0], ROUTER_ADDRESS])
           setRouterAllowance(allowance)
         }
+      }
+
+      if (tokenOut) {
+        const tempContractOut = new ethers.Contract(tokens[tokenOut].address, erc20Abi, selectedProvider)
+        const newBalanceOut = await getBalance(tokenOut, accountList[0], tempContractOut)
+
+        setBalanceOut(newBalanceOut)
       }
 
       if (tokenOut) {
@@ -421,7 +443,7 @@ function Swap({ selectedProvider, tokenList, tx }) {
     }
   }
 
-  const logoIn = metaIn ? metaIn.logoURI : null
+  const logoIn = metaIn ? metaIn.logoURI : 'https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/icons/matic.svg'
   const logoOut = metaOut ? metaOut.logoURI : null
 
   // const rawPrice = trades && trades[0] ? trades[0].executionPrice : null
