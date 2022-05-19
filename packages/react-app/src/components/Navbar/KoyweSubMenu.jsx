@@ -44,10 +44,14 @@ const KoyweSubMenu = ({ path, handleMenu }) => {
         >
           Ranking
         </Menu.Item>
-        {/* <Menu.Item key="setting:4" icon={<IconMenu src="/icon/community.svg" width={24} />}>
-          Community
+        <Menu.Item
+          key="setting:4"
+          icon={<IconMenu src="/icon/arrow-down.svg" width={24} />}
+          onClick={() => handleMenu('/offsets')}
+        >
+          Offsets (beta)
         </Menu.Item>
-        <Menu.Item key="setting:5" icon={<IconMenu src="/icon/docs.svg" width={24} />}>
+        {/* <Menu.Item key="setting:5" icon={<IconMenu src="/icon/docs.svg" width={24} />}>
           Docs
         </Menu.Item>
         <Menu.Item key="setting:6" icon={<IconMenu src="/icon/mintPosition.svg" width={24} />}>
