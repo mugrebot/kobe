@@ -10,11 +10,13 @@ import BuySetModal from '../components/RegenDefi/BuySetModal'
 import MyRegenPositionsFull from '../components/RegenDefi/MyRegenPositionsFull'
 import SimpleRamp from '../components/RegenDefi/SimpleRamp'
 import SwapModal from '../components/RegenDefi/SwapModal'
+import Swap from '../components/Swap'
 import { IndexContext } from '../contexts/IndexContext'
 import { NetworkContext } from '../contexts/NetworkContext'
 import { WalletContext } from '../contexts/WalletContext'
 import { Transactor } from '../helpers'
 import { getFightData } from '../helpers/dashboardData'
+import tokenList from '../sushiTL.json'
 
 const { Title } = Typography
 
@@ -24,7 +26,7 @@ const ReFi = () => {
 
   const { contracts, USDPrices, walletBalance, isPledged, isLoadingBalances, writeContracts } = useContext(WalletContext)
   const { polygonMCO2Balance, polygonBCTBalance, polygonNCTBalance, polygonKlimaBalance, polygonSKlimaBalance, polygonCNBEDBalance, polygonCBTCBalance, polygonWethBalance, polygonContracts  } = walletBalance
-  const { address, isLoadingAccount, targetNetwork, userSigner } = useContext(NetworkContext)
+  const { address, isLoadingAccount, injectedProvider, userSigner } = useContext(NetworkContext)
   const { setObject, indexContextDetails, indexUSDPrices } = useContext(IndexContext)
 
   const [balance,setBalance] = useState(0)
@@ -96,6 +98,12 @@ useEffect(() => {
 
 return (
     <Row justify="center" className="mb-md">
+      {!isLoadingAccount && address && injectedProvider &&
+      <Swap
+        selectedProvider={injectedProvider}
+        tokenList={tokenList}
+      />
+      }
       {!isLoadingAccount && address && writeContracts && contracts && swapping &&
       <SwapModal
         setDetails={[currentSet]}

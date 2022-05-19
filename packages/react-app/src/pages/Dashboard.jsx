@@ -92,8 +92,8 @@ const Dashboard = () => {
         <Row justify="end" className="my-md">
           {pledged ? (
             <Col>
-              <StyledButton $type="primary" onClick={() => router.push('/regen-art')}>
-                Now Minting! Koywe Trees
+              <StyledButton $type="primary" onClick={() => router.push('/offsets')}>
+                Try our new Offsets tool (Beta)
               </StyledButton>
             </Col>
           ) : (
